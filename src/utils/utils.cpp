@@ -8,9 +8,10 @@
 #ifndef SRC_UTILS_UTILS_CPP_
 #define SRC_UTILS_UTILS_CPP_
 
-#include "utils.hpp"
 #include <vector>
 #include <iostream>
+
+#include <Cluster++/utils/utils.hpp>
 
 std::vector<double> Utilities::eigen2Stl(const Eigen::VectorXd &vec){
 	std::vector<double> v(vec.rows());

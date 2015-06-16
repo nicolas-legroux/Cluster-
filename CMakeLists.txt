@@ -2,23 +2,32 @@ cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
 
 project(Cluster++ CXX)
 
-set(Eigen_INCLUDE_DIR /home/nicolas/opt/Eigen/include/eigen3)
+set(CMAKE_BUILD_TYPE Release)
 
-file(GLOB Cluster++_SRC
-    "src/*.cpp"
-    "src/*.hpp"
-    "src/algorithms/*.hpp"
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${PROJECT_BINARY_DIR}/lib)
+set(EIGEN_INCLUDE_DIR /home/nicolas/opt/Eigen/include/eigen3)
+set(LOCAL_INCLUDE_DIR ./includes)
+SET(CMAKE_CXX_FLAGS "-O3 -fopenmp -std=c++14")
+
+file(GLOB LIBRARY_SRC
+    "src/*.cpp"    
     "src/algorithms/*.cpp"
     "src/metrics/*.cpp"
-    "src/metrics/*.hpp"
     "src/utils/*.cpp"
-    "src/utils/*.hpp"
-    "tests/*.hpp"
-    "tests/*.cpp"
 )
 
-include_directories(${Eigen_INCLUDE_DIR})
+file(GLOB LIBRARY_INCLUDES
+    "includes/*.hpp"    
+    "includes/algorithms/*.hpp"
+    "includes/metrics/*.hpp"
+    "includes/utils/*.hpp"
+)
+ 
+ file(GLOB TEST_SRC
+ 	"tests/*.hpp"
+    "tests/*.cpp"
+ ) 	
 
-add_executable(Cluster++ ${Cluster++_SRC})
+include_directories(${EIGEN_INCLUDE_DIR} ${LOCAL_INCLUDE_DIR}) 
+include(lib/CMakeLists.txt)
 
-SET(CMAKE_CXX_FLAGS "-O3 -fopenmp -std=c++11")

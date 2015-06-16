@@ -16,6 +16,8 @@
 
 namespace Utilities {
 
+const double EPSILON = 0.00001;
+
 /*
  *
  * Useful templates

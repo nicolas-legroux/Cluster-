@@ -4,6 +4,12 @@
 #include <memory>
 #include <Eigen/Dense>
 
+namespace MetricType {
+enum MetricType {
+	DISTANCE, SIMILARITY
+};
+}
+
 namespace MetricName {
 enum MetricName {
 	PEARSON_CORRELATION,
@@ -16,6 +22,7 @@ enum MetricName {
 	COSINE_ABSOLUTE_SIMILARITY,
 	COSINE_DISTANCE,
 	EUCLIDEAN_DISTANCE,
+	SQUARED_EUCLIDEAN_DISTANCE,
 	MANHATTAN_DISTANCE
 };
 } //End of MetricName namespace
@@ -37,6 +44,7 @@ enum DistanceMetricName {
 	SPEARMAN_DISTANCE,
 	COSINE_DISTANCE,
 	EUCLIDEAN_DISTANCE,
+	SQUARED_EUCLIDEAN_DISTANCE,
 	MANHATTAN_DISTANCE
 };
 } //End of DistanceMetricName namespace
@@ -215,5 +223,10 @@ public:
 		return true;
 	}
 };
+
+//utility functions
+
+MetricType::MetricType getMetricType(MetricName::MetricName metricName);
+std::shared_ptr<Metric> buildMetric(MetricName::MetricName metricName);
 
 #endif /* SRC_METRICS_METRICS_HPP_ */

@@ -9,18 +9,14 @@
 #define SRC_ALGORITHMS_CLUSTERER_HPP_
 
 #include <vector>
+#include <memory>
 #include <Eigen/Dense>
-
 #include "clusterer_parameters.hpp"
 
-class Clusterer{
+class Clusterer {
 public:
 	virtual std::vector<int> cluster() = 0;
 	virtual ~Clusterer() = 0;
-};
-
-class KMeans_Clusterer{
-
 };
 
 #endif /* SRC_ALGORITHMS_CLUSTERER_HPP_ */

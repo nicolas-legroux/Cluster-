@@ -1,11 +1,13 @@
-#include <Eigen/Dense>
 #include <cassert>
 #include <memory>
 #include <cmath>
-#include "metrics.hpp"
 #include <iostream>
 #include <vector>
-#include "../utils/utils.hpp"
+#include <cassert>
+
+#include <Eigen/Dense>
+#include <Cluster++/metrics/metrics.hpp>
+#include <Cluster++/utils/utils.hpp>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -209,7 +211,8 @@ MatrixXd PearsonCorrelation::compute(const MatrixXd &X) const {
 			- (means.array() * means.array()).matrix()).array().sqrt();
 	return (((X.rowwise() - means.row(0)).transpose()
 			* (X.rowwise() - means.row(0))).array()
-			/ (stdDevs.transpose() * stdDevs).array()).matrix() / (double)X.rows();
+			/ (stdDevs.transpose() * stdDevs).array()).matrix()
+			/ (double) X.rows();
 }
 
 double PearsonAbsoluteCorrelation::compute(const VectorXd &left,
@@ -304,5 +307,69 @@ MatrixXd SpearmanDistance::compute(const MatrixXd &X, const MatrixXd &Y) const {
 
 MatrixXd SpearmanDistance::compute(const MatrixXd &X) const {
 	return 1.0 - SpearmanAbsoluteCorrelation().compute(X).array();
+}
+
+MetricType::MetricType getMetricType(MetricName::MetricName metricName) {
+	switch (metricName) {
+	case MetricName::COSINE_ABSOLUTE_SIMILARITY:
+		return MetricType::SIMILARITY;
+	case MetricName::COSINE_DISTANCE:
+		return MetricType::DISTANCE;
+	case MetricName::COSINE_SIMILARITY:
+		return MetricType::SIMILARITY;
+	case MetricName::EUCLIDEAN_DISTANCE:
+		return MetricType::DISTANCE;
+	case MetricName::SQUARED_EUCLIDEAN_DISTANCE:
+		return MetricType::DISTANCE;
+	case MetricName::MANHATTAN_DISTANCE:
+		return MetricType::DISTANCE;
+	case MetricName::PEARSON_ABSOLUTE_CORRELATION:
+		return MetricType::SIMILARITY;
+	case MetricName::PEARSON_CORRELATION:
+		return MetricType::SIMILARITY;
+	case MetricName::PEARSON_DISTANCE:
+		return MetricType::DISTANCE;
+	case MetricName::SPEARMAN_ABSOLUTE_CORRELATION:
+		return MetricType::SIMILARITY;
+	case MetricName::SPEARMAN_CORRELATION:
+		return MetricType::SIMILARITY;
+	case MetricName::SPEARMAN_DISTANCE:
+		return MetricType::DISTANCE;
+	default:
+		assert(false);
+		return MetricType::DISTANCE; //Eclipse complains otherwise
+	}
+}
+
+std::shared_ptr<Metric> buildMetric(MetricName::MetricName metricName) {
+	switch (metricName) {
+	case MetricName::COSINE_ABSOLUTE_SIMILARITY:
+		return std::make_shared<CosineAbsoluteSimilarity>();
+	case MetricName::COSINE_DISTANCE:
+		return std::make_shared<CosineDistance>();
+	case MetricName::COSINE_SIMILARITY:
+		return std::make_shared<CosineSimilarity>();
+	case MetricName::EUCLIDEAN_DISTANCE:
+		return std::make_shared<EuclideanDistance>();
+	case MetricName::SQUARED_EUCLIDEAN_DISTANCE:
+		return std::make_shared<SquaredEuclideanDistance>();
+	case MetricName::MANHATTAN_DISTANCE:
+		return std::make_shared<ManhattanDistance>();
+	case MetricName::PEARSON_ABSOLUTE_CORRELATION:
+		return std::make_shared<PearsonAbsoluteCorrelation>();
+	case MetricName::PEARSON_CORRELATION:
+		return std::make_shared<PearsonCorrelation>();
+	case MetricName::PEARSON_DISTANCE:
+		return std::make_shared<PearsonDistance>();
+	case MetricName::SPEARMAN_ABSOLUTE_CORRELATION:
+		return std::make_shared<SpearmanAbsoluteCorrelation>();
+	case MetricName::SPEARMAN_CORRELATION:
+		return std::make_shared<SpearmanCorrelation>();
+	case MetricName::SPEARMAN_DISTANCE:
+		return std::make_shared<SpearmanDistance>();
+	default:
+		assert(false);
+		return std::make_shared<EuclideanDistance>();
+	}
 }
 

@@ -5,8 +5,8 @@
  *      Author: nicolas
  */
 
-#include "tests.hpp"
 #include "../src/metrics/metrics.hpp"
+#include "metrics.hpp"
 
 #include <iostream>
 #include <Eigen/Dense>
@@ -23,15 +23,15 @@ void Test::testMetrics1() {
 	std::clock_t start;
 	double duration;
 
-	Eigen::MatrixXd X = MatrixXd::Random(20000, 2000);
-	Eigen::MatrixXd Y = MatrixXd::Random(20000, 2);
+	Eigen::MatrixXd X = MatrixXd::Random(1, 2000);
+	Eigen::MatrixXd Y = MatrixXd::Random(1, 2);
 
 	//cout << "left: " << endl << left << endl << endl;
 	//cout << "right: " << endl << right << endl << endl;
 
 	start = std::clock();
 
-	PearsonCorrelation ed;
+	SquaredEuclideanDistance ed;
 	MatrixXd dist = ed.compute(X);
 
 	//cout << dist << endl << endl;

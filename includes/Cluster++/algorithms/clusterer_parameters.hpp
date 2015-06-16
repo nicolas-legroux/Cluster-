@@ -37,14 +37,10 @@ public:
 };
 
 class HierarchicalParameters: public ClustererParameters {
+public:
 	enum LinkageMethod {
 		AVERAGE, SINGLE, COMPLETE
 	};
-private:
-	unsigned int K;
-	std::shared_ptr<Metric> metricPtr;
-	LinkageMethod linkageMethod;
-public:
 	HierarchicalParameters(unsigned int _K,
 			const std::shared_ptr<Metric> &_metricPtr,
 			const LinkageMethod &_linkageMethod = LinkageMethod::COMPLETE,
@@ -53,6 +49,13 @@ public:
 					_linkageMethod) {
 
 	}
+
+	HierarchicalParameters(unsigned int _K,
+			const std::shared_ptr<Metric> &_metricPtr, bool verbose) :
+			HierarchicalParameters(_K, _metricPtr, LinkageMethod::COMPLETE,
+					verbose) {
+	}
+
 	//Set K=2
 	HierarchicalParameters(const std::shared_ptr<Metric> &_metricPtr,
 			const LinkageMethod &_linkageMethod = LinkageMethod::COMPLETE,
@@ -66,27 +69,26 @@ public:
 		return K;
 	}
 
-	std::shared_ptr<Metric> getMetricPtr() {
+	std::shared_ptr<Metric> getMetric() {
 		return metricPtr;
 	}
 
 	LinkageMethod getLinkageMethod() {
 		return linkageMethod;
 	}
+private:
+	unsigned int K;
+	std::shared_ptr<Metric> metricPtr;
+	LinkageMethod linkageMethod;
 };
 
 class SpectralParameters: public ClustererParameters {
-
-	enum GraphTransformationMethodName {
-		NO_TRANSFORMATION, K_NEAREST_NEIGHBORS
-	};
-
+public:
 	class GraphTransformationMethod {
-	private:
-		unsigned int kNearestNeighbors;
-		double guaussianModelStdDev;
-		GraphTransformationMethodName method;
 	public:
+		enum GraphTransformationMethodName {
+			NO_TRANSFORMATION, K_NEAREST_NEIGHBORS, GAUSSIAN_MIXTURE
+		};
 		GraphTransformationMethod() :
 				kNearestNeighbors(0), guaussianModelStdDev(0.0), method(
 						GraphTransformationMethodName::NO_TRANSFORMATION) {
@@ -102,13 +104,11 @@ class SpectralParameters: public ClustererParameters {
 		GraphTransformationMethod(GraphTransformationMethodName _method,
 				double param) :
 				kNearestNeighbors(0), guaussianModelStdDev(0.0), method(_method) {
-			assert(method != GraphTransformationMethodName::NO_TRANSFORMATION);
 			if (method == GraphTransformationMethodName::K_NEAREST_NEIGHBORS) {
 				kNearestNeighbors = param;
-			}
-			//TODO Implement Gaussian Model
-			else {
-				assert(false);
+			} else if (method
+					== GraphTransformationMethodName::GAUSSIAN_MIXTURE) {
+				guaussianModelStdDev = param;
 			}
 		}
 
@@ -123,33 +123,41 @@ class SpectralParameters: public ClustererParameters {
 		double getGaussianModelStdDev() const {
 			return guaussianModelStdDev;
 		}
+	private:
+		unsigned int kNearestNeighbors;
+		double guaussianModelStdDev;
+		GraphTransformationMethodName method;
 	};
-private:
-	unsigned int K;
-	std::shared_ptr<Metric> metricPtr;
-	GraphTransformationMethod transformationMethod;
-public:
 	SpectralParameters(unsigned int _K,
 			const std::shared_ptr<Metric> &_metricPtr,
-			GraphTransformationMethod _transformationMethod =
+			const GraphTransformationMethod &_transformationMethod =
 					GraphTransformationMethod(), bool verbose = false) :
 			ClustererParameters(verbose), K(_K), metricPtr(_metricPtr), transformationMethod(
 					_transformationMethod) {
 	}
 
 	SpectralParameters(unsigned int _K,
-			const std::shared_ptr<Metric> &_metricPtr,
-			bool verbose) :
-			SpectralParameters(_K, _metricPtr, GraphTransformationMethod(), verbose) {
+			const std::shared_ptr<Metric> &_metricPtr, bool verbose) :
+			SpectralParameters(_K, _metricPtr, GraphTransformationMethod(),
+					verbose) {
 	}
 
 	unsigned int getK() {
 		return K;
 	}
 
-	std::shared_ptr<Metric> getMetricPtr() {
+	std::shared_ptr<Metric> getMetric() {
 		return metricPtr;
 	}
+
+	GraphTransformationMethod getTransformationMethod() {
+		return transformationMethod;
+	}
+
+private:
+	unsigned int K;
+	std::shared_ptr<Metric> metricPtr;
+	GraphTransformationMethod transformationMethod;
 };
 
 #endif /* SRC_ALGORITHMS_CLUSTERER_PARAMETERS_HPP_ */
