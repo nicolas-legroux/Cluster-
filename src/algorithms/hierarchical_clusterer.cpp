@@ -9,11 +9,12 @@
 #include <cassert>
 #include <utility>
 
-#include <Cluster++/algorithms/hierarchical_clusterer.hpp>
-#include <Cluster++/algorithms/clusterer_parameters.hpp>
-#include <Cluster++/utils/utils.hpp>
+#include <ClusterXX/algorithms/hierarchical_clusterer.hpp>
+#include <ClusterXX/algorithms/clusterer_parameters.hpp>
+#include <ClusterXX/utils/utils.hpp>
 
-Hierarchical_Clusterer::Hierarchical_Clusterer(const Eigen::MatrixXd &_data,
+ClusterXX::Hierarchical_Clusterer::Hierarchical_Clusterer(
+		const Eigen::MatrixXd &_data,
 		const std::shared_ptr<ClustererParameters> &_params) :
 		originalData(_data) {
 	parameters = std::dynamic_pointer_cast<HierarchicalParameters>(_params);
@@ -23,7 +24,7 @@ Hierarchical_Clusterer::Hierarchical_Clusterer(const Eigen::MatrixXd &_data,
 	}
 }
 
-void Hierarchical_Clusterer::initialize() {
+void ClusterXX::Hierarchical_Clusterer::initialize() {
 	unsigned int N = originalData.cols();
 
 	//initializing union find data structures
@@ -59,14 +60,14 @@ void Hierarchical_Clusterer::initialize() {
 	assert(distanceMatrixCopy.size() == N * (N + 1) / 2);
 }
 
-double& Hierarchical_Clusterer::getDistance(int i, int j) {
+double& ClusterXX::Hierarchical_Clusterer::getDistance(int i, int j) {
 	if (j > i) {
 		std::swap(i, j);
 	}
 	return distanceMatrixCopy[i * (i + 1) / 2 + j];
 }
 
-double Hierarchical_Clusterer::worstPossibleDistance() const {
+double ClusterXX::Hierarchical_Clusterer::worstPossibleDistance() const {
 	if (parameters->getMetric()->isDistanceMetric()) {
 		return std::numeric_limits<double>::infinity();
 	} else {
@@ -75,7 +76,7 @@ double Hierarchical_Clusterer::worstPossibleDistance() const {
 	}
 }
 
-bool Hierarchical_Clusterer::isBetterDistance(double oldDistance,
+bool ClusterXX::Hierarchical_Clusterer::isBetterDistance(double oldDistance,
 		double newDistance) const {
 	if (parameters->getMetric()->isDistanceMetric()) {
 		return newDistance < oldDistance;
@@ -85,7 +86,7 @@ bool Hierarchical_Clusterer::isBetterDistance(double oldDistance,
 	}
 }
 
-std::pair<int, int> Hierarchical_Clusterer::findClustersToMerge() {
+std::pair<int, int> ClusterXX::Hierarchical_Clusterer::findClustersToMerge() {
 	std::pair<int, int> clustersToMerge { -1, -1 };
 	double bestDistance = worstPossibleDistance();
 	for (int i : clusterRepresentatives) {
@@ -103,7 +104,7 @@ std::pair<int, int> Hierarchical_Clusterer::findClustersToMerge() {
 	return clustersToMerge;
 }
 
-void Hierarchical_Clusterer::updateDistances(int deletedCluster,
+void ClusterXX::Hierarchical_Clusterer::updateDistances(int deletedCluster,
 		int mergedCluster) {
 	for (int i : clusterRepresentatives) {
 		if (i != mergedCluster) {
@@ -137,7 +138,7 @@ void Hierarchical_Clusterer::updateDistances(int deletedCluster,
 	}
 }
 
-void Hierarchical_Clusterer::mergeClusters(int i, int j) {
+void ClusterXX::Hierarchical_Clusterer::mergeClusters(int i, int j) {
 	clusterRepresentatives.erase(i);
 	unionFindDataStructure[i] = j;
 	updateDistances(i, j);
@@ -146,7 +147,7 @@ void Hierarchical_Clusterer::mergeClusters(int i, int j) {
 	}
 }
 
-int Hierarchical_Clusterer::findClusterRepresentative(int i) const {
+int ClusterXX::Hierarchical_Clusterer::findClusterRepresentative(int i) const {
 	int next = unionFindDataStructure[i];
 	while (next != -1) {
 		i = next;
@@ -155,35 +156,34 @@ int Hierarchical_Clusterer::findClusterRepresentative(int i) const {
 	return i;
 }
 
-std::vector<int> Hierarchical_Clusterer::cluster() {
+void ClusterXX::Hierarchical_Clusterer::compute() {
 	initialize();
 	unsigned int K = parameters->getK();
-	assert( K <= clusterRepresentatives.size() && K >= 2);
+	assert(K <= clusterRepresentatives.size() && K >= 2);
 	int mergesToPerform = clusterRepresentatives.size() - K;
 	int countIterations = 0;
-	if(parameters->getVerbose()){
+	if (parameters->getVerbose()) {
 		std::cout << "Advancement of hierarchical clustering : " << std::endl;
 	}
 	while (clusterRepresentatives.size() > K) {
 		std::pair<int, int> clusterToMerge = findClustersToMerge();
 		mergeClusters(clusterToMerge.first, clusterToMerge.second);
 		++countIterations;
-		if(parameters->getVerbose()){
+		if (parameters->getVerbose()) {
 			Utilities::printAdvancement(countIterations, mergesToPerform);
 		}
 	}
 
 	unsigned int N = originalData.cols();
-	std::vector<int> clusters(N);
+	clusters.resize(N);
 	std::map<int, unsigned int> map = Utilities::buildIndexMap<int>(
 			clusterRepresentatives.cbegin(), clusterRepresentatives.cend());
 	for (unsigned int i = 0; i < N; ++i) {
 		int j = findClusterRepresentative(i);
 		clusters[i] = map[j];
 	}
-	return clusters;
 }
 
-const Eigen::MatrixXd& Hierarchical_Clusterer::getDistanceMatrix() const{
+const Eigen::MatrixXd& ClusterXX::Hierarchical_Clusterer::getDistanceMatrix() const {
 	return distanceMatrix;
 }

@@ -10,10 +10,9 @@
 
 #include <vector>
 #include <iostream>
+#include <ClusterXX/utils/utils.hpp>
 
-#include <Cluster++/utils/utils.hpp>
-
-std::vector<double> Utilities::eigen2Stl(const Eigen::VectorXd &vec){
+std::vector<double> ClusterXX::Utilities::eigen2Stl(const Eigen::VectorXd &vec){
 	std::vector<double> v(vec.rows());
 	for(unsigned int i=0; i<vec.rows(); ++i){
 		v[i] = vec(i);
@@ -21,7 +20,7 @@ std::vector<double> Utilities::eigen2Stl(const Eigen::VectorXd &vec){
 	return v;
 }
 
-Eigen::VectorXd Utilities::stl2Eigen(const std::vector<double> &vec){
+Eigen::VectorXd ClusterXX::Utilities::stl2Eigen(const std::vector<double> &vec){
 	Eigen::VectorXd v(vec.size());
 	for(unsigned int i=0; i<vec.size(); ++i){
 		v(i) = vec[i];
@@ -51,7 +50,7 @@ void computeRankSorted(std::vector<double> *x) {
 	}
 }
 
-void Utilities::computeRank(std::vector<double> *v) {
+void ClusterXX::Utilities::computeRank(std::vector<double> *v) {
 	std::vector<double> copyX(*v);
 	std::vector<size_t> sortedXIndexes = Utilities::get_rank_increasing(copyX);
 	std::sort(copyX.begin(), copyX.end());
@@ -63,7 +62,7 @@ void Utilities::computeRank(std::vector<double> *v) {
 
 
 
-void Utilities::printAdvancement(unsigned int currentCount,
+void ClusterXX::Utilities::printAdvancement(unsigned int currentCount,
 		unsigned int totalCount) {
 	std::cout << (100.0 * (double) currentCount) / (double) (totalCount)
 			<< "% \r" << std::flush;

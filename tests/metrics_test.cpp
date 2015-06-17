@@ -5,13 +5,13 @@
  *      Author: nicolas
  */
 
-#include "../src/metrics/metrics.hpp"
-#include "metrics.hpp"
-
 #include <iostream>
 #include <Eigen/Dense>
 #include <cstdio>
 #include <ctime>
+#include <ClusterXX/metrics/metrics.hpp>
+
+#include "metrics_test.hpp"
 
 using std::cout;
 using std::endl;
@@ -31,7 +31,7 @@ void Test::testMetrics1() {
 
 	start = std::clock();
 
-	SquaredEuclideanDistance ed;
+	ClusterXX::SquaredEuclideanDistance ed;
 	MatrixXd dist = ed.compute(X);
 
 	//cout << dist << endl << endl;

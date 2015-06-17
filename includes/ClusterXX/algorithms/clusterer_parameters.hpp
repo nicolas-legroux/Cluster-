@@ -1,8 +1,10 @@
 #ifndef SRC_ALGORITHMS_CLUSTERER_PARAMETERS_HPP_
 #define SRC_ALGORITHMS_CLUSTERER_PARAMETERS_HPP_
 
-#include "../metrics/metrics.hpp"
 #include <memory>
+#include "../metrics/metrics.hpp"
+
+namespace ClusterXX{
 
 class ClustererParameters {
 private:
@@ -159,5 +161,7 @@ private:
 	std::shared_ptr<Metric> metricPtr;
 	GraphTransformationMethod transformationMethod;
 };
+
+} //End of namespace ClusterXX
 
 #endif /* SRC_ALGORITHMS_CLUSTERER_PARAMETERS_HPP_ */

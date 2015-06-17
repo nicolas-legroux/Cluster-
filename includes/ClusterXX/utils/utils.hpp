@@ -14,6 +14,8 @@
 #include <iostream>
 #include <Eigen/Dense>
 
+namespace ClusterXX{
+
 namespace Utilities {
 
 const double EPSILON = 0.00001;
@@ -131,6 +133,8 @@ void computeRank(std::vector<double> *v);
 
 void printAdvancement(unsigned int currentCount, unsigned int totalCount);
 
-} //End of Utilities namespace
+} //End of namespace Utilities
+
+} //End of namespace ClusterXX
 
 #endif /* SRC_UTILS_UTILS_HPP_ */

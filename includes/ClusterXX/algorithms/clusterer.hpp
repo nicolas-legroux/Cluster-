@@ -9,14 +9,23 @@
 #define SRC_ALGORITHMS_CLUSTERER_HPP_
 
 #include <vector>
-#include <memory>
-#include <Eigen/Dense>
-#include "clusterer_parameters.hpp"
+#include <map>
+
+namespace ClusterXX{
 
 class Clusterer {
 public:
-	virtual std::vector<int> cluster() = 0;
-	virtual ~Clusterer() = 0;
+	virtual void compute() = 0;
+	std::vector<int> getClusters();
+	double computeRandIndex(const std::vector<int> &otherClustering);
+	double computeAdjustedRandIndex(const std::vector<int> &otherClustering);
+	void printClustering(const std::map<int, std::string> &labelsMap,
+			const std::vector<int> &realClusters);
+	virtual ~Clusterer() = default;
+protected:
+	std::vector<int> clusters;
 };
+
+} //End of namespace ClusterXX
 
 #endif /* SRC_ALGORITHMS_CLUSTERER_HPP_ */

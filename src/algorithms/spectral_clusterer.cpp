@@ -6,14 +6,13 @@
  */
 
 #include <iostream>
-
 #include <Eigen/Eigenvalues>
-#include <Cluster++/algorithms/kmeans_clusterer.hpp>
-#include <Cluster++/algorithms/spectral_clusterer.hpp>
-#include <Cluster++/algorithms/clusterer_parameters.hpp>
-#include <Cluster++/utils/utils.hpp>
+#include <ClusterXX/algorithms/kmeans_clusterer.hpp>
+#include <ClusterXX/algorithms/spectral_clusterer.hpp>
+#include <ClusterXX/algorithms/clusterer_parameters.hpp>
+#include <ClusterXX/utils/utils.hpp>
 
-Spectral_Clusterer::Spectral_Clusterer(const Eigen::MatrixXd &_data,
+ClusterXX::Spectral_Clusterer::Spectral_Clusterer(const Eigen::MatrixXd &_data,
 		const std::shared_ptr<ClustererParameters> &_params) :
 		originalData(_data) {
 	parameters = std::dynamic_pointer_cast<SpectralParameters>(_params);
@@ -23,7 +22,7 @@ Spectral_Clusterer::Spectral_Clusterer(const Eigen::MatrixXd &_data,
 	}
 }
 
-void Spectral_Clusterer::computeSimilarityMatrix() {
+void ClusterXX::Spectral_Clusterer::computeSimilarityMatrix() {
 	if (parameters->getVerbose()) {
 		std::cout << "Computing the Distance Matrix, this can take a while... "
 				<< std::flush;
@@ -123,7 +122,7 @@ void Spectral_Clusterer::computeSimilarityMatrix() {
 	}
 }
 
-void Spectral_Clusterer::computeLaplacianMatrix() {
+void ClusterXX::Spectral_Clusterer::computeLaplacianMatrix() {
 	unsigned int N = originalData.cols();
 	Eigen::MatrixXd D = Eigen::MatrixXd::Zero(N, N);
 	for (unsigned int i = 0; i < N; ++i) {
@@ -135,7 +134,7 @@ void Spectral_Clusterer::computeLaplacianMatrix() {
 	//L = I-D^-1*W ?
 }
 
-std::vector<int> Spectral_Clusterer::cluster() {
+void ClusterXX::Spectral_Clusterer::compute() {
 	unsigned int N = originalData.cols();
 
 	computeSimilarityMatrix();
@@ -162,6 +161,7 @@ std::vector<int> Spectral_Clusterer::cluster() {
 	}
 
 	KMeans_Clusterer kmeansClusterer(dataForKMeans, kMeansParams);
-	return kmeansClusterer.cluster();
+	kmeansClusterer.compute();
+	clusters = kmeansClusterer.getClusters();
 }
 

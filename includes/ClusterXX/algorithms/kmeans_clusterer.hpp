@@ -8,13 +8,17 @@
 #ifndef SRC_ALGORITHMS_KMEANS_CLUSTERER_HPP_
 #define SRC_ALGORITHMS_KMEANS_CLUSTERER_HPP_
 
+#include <Eigen/Dense>
+#include <memory>
 #include "clusterer.hpp"
+#include "clusterer_parameters.hpp"
+
+namespace ClusterXX{
 
 class KMeans_Clusterer : public Clusterer {
 private:
 	const Eigen::MatrixXd &data;
 	std::shared_ptr<KMeansParameters> parameters;
-	std::vector<int> clusters;
 
 	Eigen::MatrixXd medoids;
 	std::vector<bool> dataToCluster;
@@ -33,9 +37,11 @@ public:
 			std::shared_ptr<ClustererParameters> _params,
 			std::vector<int> *initialClusters);
 
-	std::vector<int> cluster();
+	void compute() override;
 	Eigen::MatrixXd getMedoids();
 	double getDistortion();
 };
+
+} //End of namespace ClusterXX
 
 #endif /* SRC_ALGORITHMS_KMEANS_CLUSTERER_HPP_ */

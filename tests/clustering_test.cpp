@@ -12,12 +12,9 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-#include "../src/algorithms/clusterer.hpp"
-#include "../src/algorithms/kmeans_clusterer.hpp"
-#include "../src/algorithms/hierarchical_clusterer.hpp"
-#include "../src/algorithms/spectral_clusterer.hpp"
-#include "../src/utils/utils.hpp"
-#include "clustering.hpp"
+#include <ClusterXX/algorithms/algorithms.hpp>
+#include <ClusterXX/utils/utils.hpp>
+#include "clustering_test.hpp"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -33,15 +30,16 @@ void Test::small_kmeans_test() {
 	std::cout << "Clustering the following matrix : " << std::endl
 			<< dataToCluster << std::endl;
 
-	std::shared_ptr<ClustererParameters> params = std::make_shared<
-			KMeansParameters>(K, Nmax, true);
+	std::shared_ptr<ClusterXX::ClustererParameters> params = std::make_shared<
+			ClusterXX::KMeansParameters>(K, Nmax, true);
 
-	KMeans_Clusterer clusterer(dataToCluster, params);
-	std::vector<int> clusters = clusterer.cluster();
+	ClusterXX::KMeans_Clusterer clusterer(dataToCluster, params);
+	clusterer.compute();
+	std::vector<int> clusters = clusterer.getClusters();
 	MatrixXd medoids = clusterer.getMedoids();
 	std::cout << "The medoids are : " << std::endl << medoids;
 	std::cout << std::endl << "The cluster asignments are : " << std::endl;
-	Utilities::print_vector(clusters);
+	ClusterXX::Utilities::print_vector(clusters);
 }
 
 void Test::small_hierarchical_test() {
@@ -55,18 +53,19 @@ void Test::small_hierarchical_test() {
 	std::cout << "Clustering the following matrix : " << std::endl
 			<< dataToCluster << std::endl;
 
-	std::shared_ptr<ClustererParameters> params = std::make_shared<
-			HierarchicalParameters>(K,
-			std::make_shared<SquaredEuclideanDistance>(),
-			HierarchicalParameters::COMPLETE, true);
+	std::shared_ptr<ClusterXX::ClustererParameters> params = std::make_shared<
+			ClusterXX::HierarchicalParameters>(K,
+			std::make_shared<ClusterXX::SquaredEuclideanDistance>(),
+			ClusterXX::HierarchicalParameters::COMPLETE, true);
 
-	Hierarchical_Clusterer clusterer(dataToCluster, params);
-	std::vector<int> clusters = clusterer.cluster();
+	ClusterXX::Hierarchical_Clusterer clusterer(dataToCluster, params);
+	clusterer.compute();
+	std::vector<int> clusters = clusterer.getClusters();
 	std::cout << "The distance matrix is : " << std::endl
 			<< clusterer.getDistanceMatrix();
 	std::cout << std::endl << std::endl << "The cluster asignments are : "
 			<< std::endl;
-	Utilities::print_vector(clusters);
+	ClusterXX::Utilities::print_vector(clusters);
 }
 
 void Test::small_spectral_test() {
@@ -80,18 +79,18 @@ void Test::small_spectral_test() {
 	std::cout << "Clustering the following matrix : " << std::endl
 			<< dataToCluster << std::endl;
 
-	std::shared_ptr<ClustererParameters> params =
-			std::make_shared<SpectralParameters>(K,
-					std::make_shared<SquaredEuclideanDistance>(),
-					SpectralParameters::GraphTransformationMethod(
-							SpectralParameters::GraphTransformationMethod::K_NEAREST_NEIGHBORS, 2),
-					true);
+	std::shared_ptr<ClusterXX::ClustererParameters> params =
+			std::make_shared<ClusterXX::SpectralParameters>(K,
+					std::make_shared<ClusterXX::SquaredEuclideanDistance>(),
+					ClusterXX::SpectralParameters::GraphTransformationMethod(
+							ClusterXX::SpectralParameters::GraphTransformationMethod::K_NEAREST_NEIGHBORS,
+							2), true);
 
-	Spectral_Clusterer clusterer(dataToCluster, params);
-	std::vector<int> clusters = clusterer.cluster();
-	std::cout << std::endl << "The cluster asignments are : "
-			<< std::endl;
-	Utilities::print_vector(clusters);
+	ClusterXX::Spectral_Clusterer clusterer(dataToCluster, params);
+	clusterer.compute();
+	std::vector<int> clusters = clusterer.getClusters();
+	std::cout << std::endl << "The cluster asignments are : " << std::endl;
+	ClusterXX::Utilities::print_vector(clusters);
 }
 
 #endif /* TESTS_K_MEANS_CPP_ */

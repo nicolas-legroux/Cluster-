@@ -9,17 +9,18 @@
 #include <stdexcept>
 #include <vector>
 #include <limits>
-#include <Cluster++/algorithms/kmeans_clusterer.hpp>
-#include <Cluster++/algorithms/clusterer_parameters.hpp>
-#include <Cluster++/utils/utils.hpp>
+#include <ClusterXX/algorithms/kmeans_clusterer.hpp>
+#include <ClusterXX/algorithms/clusterer_parameters.hpp>
+#include <ClusterXX/utils/utils.hpp>
 
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
 
-KMeans_Clusterer::KMeans_Clusterer(const Eigen::MatrixXd &_data,
+ClusterXX::KMeans_Clusterer::KMeans_Clusterer(const Eigen::MatrixXd &_data,
 		std::shared_ptr<ClustererParameters> _params) :
-		data(_data), clusters(_data.cols()), dataToCluster(_data.cols(), true), currentDistortion(
+		data(_data), dataToCluster(_data.cols(), true), currentDistortion(
 				std::numeric_limits<double>::max()) {
+	clusters.resize(_data.cols());
 	parameters = std::dynamic_pointer_cast<KMeansParameters>(_params);
 	if (!parameters) {
 		throw std::invalid_argument(
@@ -30,11 +31,12 @@ KMeans_Clusterer::KMeans_Clusterer(const Eigen::MatrixXd &_data,
 	medoids.resize(data.rows(), parameters->getK());
 }
 
-KMeans_Clusterer::KMeans_Clusterer(const Eigen::MatrixXd &_data,
+ClusterXX::KMeans_Clusterer::KMeans_Clusterer(const Eigen::MatrixXd &_data,
 		std::shared_ptr<ClustererParameters> _params,
 		std::vector<int> *initialClusters) :
-		data(_data), clusters(*initialClusters), dataToCluster(_data.cols()), currentDistortion(
+		data(_data), dataToCluster(_data.cols()), currentDistortion(
 				std::numeric_limits<double>::max()) {
+	clusters = *initialClusters;
 	parameters = std::dynamic_pointer_cast<KMeansParameters>(_params);
 	if (!parameters) {
 		throw std::invalid_argument(
@@ -55,7 +57,7 @@ KMeans_Clusterer::KMeans_Clusterer(const Eigen::MatrixXd &_data,
 }
 
 //TODO : implement better algorithm
-void KMeans_Clusterer::initializeClustersRandomly() {
+void ClusterXX::KMeans_Clusterer::initializeClustersRandomly() {
 	std::default_random_engine engine(std::random_device { }());
 	std::uniform_int_distribution<int> distribution(0, data.cols() - 1);
 	std::vector<VectorXd> initialMedoids(parameters->getK());
@@ -86,7 +88,7 @@ void KMeans_Clusterer::initializeClustersRandomly() {
 	}
 }
 
-void KMeans_Clusterer::recalculateMeans() {
+void ClusterXX::KMeans_Clusterer::recalculateMeans() {
 	std::vector<int> clusterSize(parameters->getK(), 0);
 	//Reset medoids to 0
 	medoids *= 0;
@@ -104,7 +106,7 @@ void KMeans_Clusterer::recalculateMeans() {
 	}
 }
 
-double KMeans_Clusterer::kMeansIteration() {
+double ClusterXX::KMeans_Clusterer::kMeansIteration() {
 
 	MatrixXd distances = SquaredEuclideanDistance().compute(medoids, data);
 	double newDistortion = 0;
@@ -120,7 +122,7 @@ double KMeans_Clusterer::kMeansIteration() {
 	return newDistortion;
 }
 
-std::vector<int> KMeans_Clusterer::cluster() {
+void ClusterXX::KMeans_Clusterer::compute() {
 
 	initializeClustersRandomly();
 
@@ -150,14 +152,12 @@ std::vector<int> KMeans_Clusterer::cluster() {
 	if (iterations == parameters->getMaxIterations()) {
 		std::cout << "K-Means did not converge." << std::endl;
 	}
-
-	return clusters;
 }
 
-MatrixXd KMeans_Clusterer::getMedoids() {
+MatrixXd ClusterXX::KMeans_Clusterer::getMedoids() {
 	return medoids;
 }
 
-double KMeans_Clusterer::getDistortion() {
+double ClusterXX::KMeans_Clusterer::getDistortion() {
 	return currentDistortion;
 }

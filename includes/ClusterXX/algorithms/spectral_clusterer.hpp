@@ -8,10 +8,14 @@
 #ifndef SRC_ALGORITHMS_SPECTRAL_CLUSTERER_HPP_
 #define SRC_ALGORITHMS_SPECTRAL_CLUSTERER_HPP_
 
-#include "clusterer.hpp"
 #include <Eigen/Dense>
+#include <memory>
+#include "clusterer.hpp"
+#include "clusterer_parameters.hpp"
 
-class Spectral_Clusterer {
+namespace ClusterXX{
+
+class Spectral_Clusterer : public Clusterer {
 private:
 	const Eigen::MatrixXd &originalData;
 	std::shared_ptr<SpectralParameters> parameters;
@@ -25,7 +29,7 @@ private:
 public:
 	Spectral_Clusterer(const Eigen::MatrixXd &_data,
 			const std::shared_ptr<ClustererParameters> &_params);
-	std::vector<int> cluster();
+	void compute() override;
 
 	const Eigen::MatrixXd &getDistanceMatrix() {
 		return distanceMatrix;
@@ -47,5 +51,7 @@ public:
 		return eigenSolver.eigenvalues();
 	}
 };
+
+} //End of namespace ClusterXX
 
 #endif /* SRC_ALGORITHMS_SPECTRAL_CLUSTERER_HPP_ */

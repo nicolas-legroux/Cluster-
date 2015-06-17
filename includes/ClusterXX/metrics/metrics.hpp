@@ -5,6 +5,8 @@
 #include <iostream>
 #include <Eigen/Dense>
 
+namespace ClusterXX{
+
 namespace MetricType {
 enum MetricType {
 	DISTANCE, SIMILARITY
@@ -230,5 +232,7 @@ public:
 
 MetricType::MetricType getMetricType(MetricName::MetricName metricName);
 std::shared_ptr<Metric> buildMetric(MetricName::MetricName metricName);
+
+} //End of namespace ClusterXX
 
 #endif /* SRC_METRICS_METRICS_HPP_ */

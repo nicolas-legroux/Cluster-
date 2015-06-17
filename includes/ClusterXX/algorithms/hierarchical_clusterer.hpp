@@ -8,8 +8,13 @@
 #ifndef SRC_ALGORITHMS_HIERARCHICAL_CLUSTERER_HPP_
 #define SRC_ALGORITHMS_HIERARCHICAL_CLUSTERER_HPP_
 
-#include "clusterer.hpp"
+#include <Eigen/Dense>
+#include <memory>
 #include <set>
+#include "clusterer.hpp"
+#include "clusterer_parameters.hpp"
+
+namespace ClusterXX{
 
 class Hierarchical_Clusterer : public Clusterer {
 private:
@@ -32,8 +37,10 @@ private:
 public:
 	Hierarchical_Clusterer(const Eigen::MatrixXd &_data,
 			const std::shared_ptr<ClustererParameters> &_params);
-	std::vector<int> cluster();
+	void compute() override;
 	const Eigen::MatrixXd& getDistanceMatrix() const;
 };
+
+} //End of namespace ClusterXX
 
 #endif /* SRC_ALGORITHMS_HIERARCHICAL_CLUSTERER_HPP_ */
