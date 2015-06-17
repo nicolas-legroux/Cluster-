@@ -12,9 +12,6 @@
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
-Metric::~Metric() {
-}
-
 double SquaredEuclideanDistance::compute(const Eigen::VectorXd &left,
 		const Eigen::VectorXd &right) const {
 	return (left - right).squaredNorm();
@@ -47,6 +44,10 @@ MatrixXd SquaredEuclideanDistance::compute(const MatrixXd &X) const {
 	return D - 2 * (X.transpose() * X);
 }
 
+EuclideanDistance::~EuclideanDistance(){
+
+}
+
 double EuclideanDistance::compute(const Eigen::VectorXd &left,
 		const Eigen::VectorXd &right) const {
 	return std::sqrt(SquaredEuclideanDistance().compute(left, right));
@@ -57,6 +58,7 @@ MatrixXd EuclideanDistance::compute(const MatrixXd &X,
 	if (getVerbose()) {
 		std::cout << "Computing Euclidean Distance..." << std::endl;
 	}
+	std::cout << "OK" << std::endl;
 	return SquaredEuclideanDistance().compute(X, Y).array().sqrt();
 }
 

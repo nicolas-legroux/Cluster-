@@ -2,6 +2,7 @@
 #define SRC_METRICS_METRICS_HPP_
 
 #include <memory>
+#include <iostream>
 #include <Eigen/Dense>
 
 namespace MetricType {
@@ -71,7 +72,7 @@ public:
 			const Eigen::MatrixXd &Y) const = 0;
 	virtual Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const = 0;
 	virtual bool isDistanceMetric() const = 0;
-	virtual ~Metric() = 0;
+	virtual ~Metric() = default;
 };
 
 /*
@@ -102,6 +103,7 @@ public:
 	bool isDistanceMetric() const {
 		return true;
 	}
+	~EuclideanDistance();
 };
 
 class ManhattanDistance: public Metric {
