@@ -5,7 +5,7 @@
  *      Author: nicolas
  */
 
-#include <ClusterXX/algorithms/clusterer_parameters.hpp>
+#include <ClusterXX/clustering/clusterer_parameters.hpp>
 
 ClusterXX::ClustererParameters::~ClustererParameters(){
 

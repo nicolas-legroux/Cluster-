@@ -12,9 +12,9 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-#include <ClusterXX/algorithms/algorithms.hpp>
 #include <ClusterXX/utils/utils.hpp>
 #include "clustering_test.hpp"
+#include <ClusterXX/clustering/algorithms.hpp>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;

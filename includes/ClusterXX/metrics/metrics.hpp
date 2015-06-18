@@ -99,13 +99,14 @@ class EuclideanDistance: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
+	double computeVector(const Eigen::VectorXd &left,
+			const Eigen::VectorXd &right) const;
 	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
 	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return true;
 	}
-	~EuclideanDistance();
 };
 
 class ManhattanDistance: public Metric {

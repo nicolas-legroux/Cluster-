@@ -5,11 +5,11 @@
  *      Author: nicolas
  */
 
+#include <ClusterXX/clustering/clusterer_parameters.hpp>
+#include <ClusterXX/clustering/kmeans_clusterer.hpp>
+#include <ClusterXX/clustering/spectral_clusterer.hpp>
 #include <iostream>
 #include <Eigen/Eigenvalues>
-#include <ClusterXX/algorithms/kmeans_clusterer.hpp>
-#include <ClusterXX/algorithms/spectral_clusterer.hpp>
-#include <ClusterXX/algorithms/clusterer_parameters.hpp>
 #include <ClusterXX/utils/utils.hpp>
 
 ClusterXX::Spectral_Clusterer::Spectral_Clusterer(const Eigen::MatrixXd &_data,

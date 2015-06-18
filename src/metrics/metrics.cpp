@@ -44,11 +44,12 @@ MatrixXd ClusterXX::SquaredEuclideanDistance::compute(const MatrixXd &X) const {
 	return D - 2 * (X.transpose() * X);
 }
 
-ClusterXX::EuclideanDistance::~EuclideanDistance(){
-
+double ClusterXX::EuclideanDistance::compute(const Eigen::VectorXd &left,
+		const Eigen::VectorXd &right) const {
+	return std::sqrt(SquaredEuclideanDistance().compute(left, right));
 }
 
-double ClusterXX::EuclideanDistance::compute(const Eigen::VectorXd &left,
+double ClusterXX::EuclideanDistance::computeVector(const Eigen::VectorXd &left,
 		const Eigen::VectorXd &right) const {
 	return std::sqrt(SquaredEuclideanDistance().compute(left, right));
 }
@@ -371,7 +372,6 @@ std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(MetricName::MetricName
 		return std::make_shared<SpearmanDistance>();
 	default:
 		assert(false);
-		return std::make_shared<EuclideanDistance>();
+		return std::make_shared<EuclideanDistance>(); //Eclipse complains otherwise
 	}
 }
-

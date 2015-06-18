@@ -8,10 +8,10 @@
 #ifndef SRC_ALGORITHMS_SPECTRAL_CLUSTERER_HPP_
 #define SRC_ALGORITHMS_SPECTRAL_CLUSTERER_HPP_
 
+#include <ClusterXX/clustering/clusterer.hpp>
+#include <ClusterXX/clustering/clusterer_parameters.hpp>
 #include <Eigen/Dense>
 #include <memory>
-#include "clusterer.hpp"
-#include "clusterer_parameters.hpp"
 
 namespace ClusterXX{
 

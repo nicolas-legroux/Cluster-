@@ -5,12 +5,12 @@
  *      Author: nicolas
  */
 
+#include <ClusterXX/clustering/clusterer_parameters.hpp>
+#include <ClusterXX/clustering/kmeans_clusterer.hpp>
 #include <memory>
 #include <stdexcept>
 #include <vector>
 #include <limits>
-#include <ClusterXX/algorithms/kmeans_clusterer.hpp>
-#include <ClusterXX/algorithms/clusterer_parameters.hpp>
 #include <ClusterXX/utils/utils.hpp>
 
 using Eigen::VectorXd;

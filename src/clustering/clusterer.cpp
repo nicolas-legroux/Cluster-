@@ -1,7 +1,7 @@
+#include <ClusterXX/clustering/clusterer.hpp>
 #include <cassert>
 #include <algorithm>
 #include <iostream>
-#include <ClusterXX/algorithms/clusterer.hpp>
 
 std::vector<int> ClusterXX::Clusterer::getClusters() {
 	return clusters;
