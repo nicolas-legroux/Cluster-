@@ -312,38 +312,6 @@ MatrixXd ClusterXX::SpearmanDistance::compute(const MatrixXd &X) const {
 	return 1.0 - SpearmanAbsoluteCorrelation().compute(X).array();
 }
 
-ClusterXX::MetricType::MetricType ClusterXX::getMetricType(MetricName::MetricName metricName) {
-	switch (metricName) {
-	case MetricName::COSINE_ABSOLUTE_SIMILARITY:
-		return MetricType::SIMILARITY;
-	case MetricName::COSINE_DISTANCE:
-		return MetricType::DISTANCE;
-	case MetricName::COSINE_SIMILARITY:
-		return MetricType::SIMILARITY;
-	case MetricName::EUCLIDEAN_DISTANCE:
-		return MetricType::DISTANCE;
-	case MetricName::SQUARED_EUCLIDEAN_DISTANCE:
-		return MetricType::DISTANCE;
-	case MetricName::MANHATTAN_DISTANCE:
-		return MetricType::DISTANCE;
-	case MetricName::PEARSON_ABSOLUTE_CORRELATION:
-		return MetricType::SIMILARITY;
-	case MetricName::PEARSON_CORRELATION:
-		return MetricType::SIMILARITY;
-	case MetricName::PEARSON_DISTANCE:
-		return MetricType::DISTANCE;
-	case MetricName::SPEARMAN_ABSOLUTE_CORRELATION:
-		return MetricType::SIMILARITY;
-	case MetricName::SPEARMAN_CORRELATION:
-		return MetricType::SIMILARITY;
-	case MetricName::SPEARMAN_DISTANCE:
-		return MetricType::DISTANCE;
-	default:
-		assert(false);
-		return MetricType::DISTANCE; //Eclipse complains otherwise
-	}
-}
-
 std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(MetricName::MetricName metricName) {
 	switch (metricName) {
 	case MetricName::COSINE_ABSOLUTE_SIMILARITY:

@@ -16,8 +16,9 @@ public:
 			std::vector<unsigned int> classDivision =
 					std::vector<unsigned int>(),
 			unsigned int divisionLineWidth = 0,
-			std::array<char, 3> separatorColor = std::array<char, 3>{char(255), char(155),
-					0});
+			std::array<unsigned char, 3> separatorColor = std::array<
+					unsigned char, 3> { static_cast<unsigned char>(255),
+					static_cast<unsigned char>(155), 0 });
 };
 
 } //End of namespace Utilities

@@ -7,12 +7,6 @@
 
 namespace ClusterXX{
 
-namespace MetricType {
-enum MetricType {
-	DISTANCE, SIMILARITY
-};
-}
-
 namespace MetricName {
 enum MetricName {
 	PEARSON_CORRELATION,
@@ -30,27 +24,6 @@ enum MetricName {
 };
 } //End of MetricName namespace
 
-namespace SimilarityMetricName {
-enum SimilarityMetricName {
-	PEARSON_CORRELATION,
-	PEARSON_ABSOLUTE_CORRELATION,
-	SPEARMAN_CORRELATION,
-	SPEARMAN_ABSOLUTE_CORRELATION,
-	COSINE_SIMILARITY,
-	COSINE_ABSOLUTE_SIMILARITY
-};
-} //End of SimilarityMetricName namespace
-
-namespace DistanceMetricName {
-enum DistanceMetricName {
-	PEARSON_DISTANCE,
-	SPEARMAN_DISTANCE,
-	COSINE_DISTANCE,
-	EUCLIDEAN_DISTANCE,
-	SQUARED_EUCLIDEAN_DISTANCE,
-	MANHATTAN_DISTANCE
-};
-} //End of DistanceMetricName namespace
 
 /*
  *
@@ -74,6 +47,7 @@ public:
 			const Eigen::MatrixXd &Y) const = 0;
 	virtual Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const = 0;
 	virtual bool isDistanceMetric() const = 0;
+	virtual std::string toString() const = 0;
 	virtual ~Metric() = default;
 };
 
@@ -93,6 +67,9 @@ public:
 	bool isDistanceMetric() const {
 		return true;
 	}
+	std::string toString() const{
+		return "squared-euclidean-distance";
+	}
 };
 
 class EuclideanDistance: public Metric {
@@ -107,6 +84,9 @@ public:
 	bool isDistanceMetric() const {
 		return true;
 	}
+	std::string toString() const{
+		return "euclidean-distance";
+	}
 };
 
 class ManhattanDistance: public Metric {
@@ -118,6 +98,9 @@ public:
 	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return true;
+	}
+	std::string toString() const{
+		return "manhattan-distance";
 	}
 };
 
@@ -131,6 +114,9 @@ public:
 	bool isDistanceMetric() const {
 		return false;
 	}
+	std::string toString() const{
+		return "cosine-similarity";
+	}
 };
 
 class CosineAbsoluteSimilarity: public Metric {
@@ -142,6 +128,9 @@ public:
 	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return false;
+	}
+	std::string toString() const{
+		return "cosine-absolute-similarity";
 	}
 };
 
@@ -155,6 +144,9 @@ public:
 	bool isDistanceMetric() const {
 		return true;
 	}
+	std::string toString() const{
+		return "cosine-distance";
+	}
 };
 
 class PearsonCorrelation: public Metric {
@@ -166,6 +158,9 @@ public:
 	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return false;
+	}
+	std::string toString() const{
+		return "pearson-correlation";
 	}
 };
 
@@ -179,6 +174,9 @@ public:
 	bool isDistanceMetric() const {
 		return false;
 	}
+	std::string toString() const{
+		return "pearson-absolute-correlation";
+	}
 };
 
 class PearsonDistance: public Metric {
@@ -190,6 +188,9 @@ public:
 	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return true;
+	}
+	std::string toString() const{
+		return "pearson-distance";
 	}
 };
 
@@ -203,6 +204,9 @@ public:
 	bool isDistanceMetric() const {
 		return false;
 	}
+	std::string toString() const{
+		return "spearman-correlation";
+	}
 };
 
 class SpearmanAbsoluteCorrelation: public Metric {
@@ -214,6 +218,9 @@ public:
 	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return false;
+	}
+	std::string toString() const{
+		return "spearman-absolute-correlation";
 	}
 };
 
@@ -227,11 +234,13 @@ public:
 	bool isDistanceMetric() const {
 		return true;
 	}
+	std::string toString() const{
+		return "spearman-distance";
+	}
 };
 
 //utility functions
 
-MetricType::MetricType getMetricType(MetricName::MetricName metricName);
 std::shared_ptr<Metric> buildMetric(MetricName::MetricName metricName);
 
 } //End of namespace ClusterXX

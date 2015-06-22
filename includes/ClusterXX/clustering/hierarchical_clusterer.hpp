@@ -21,6 +21,7 @@ private:
 	const Eigen::MatrixXd &originalData;
 	std::shared_ptr<HierarchicalParameters> parameters;
 	Eigen::MatrixXd distanceMatrix;
+	bool dataIsDistanceMatrix;
 	std::vector<int> unionFindDataStructure;
 	std::set<int> clusterRepresentatives;
 	std::vector<int> clusterSizes;
@@ -36,7 +37,8 @@ private:
 	int findClusterRepresentative(int i) const;
 public:
 	Hierarchical_Clusterer(const Eigen::MatrixXd &_data,
-			const std::shared_ptr<ClustererParameters> &_params);
+			const std::shared_ptr<ClustererParameters> &_params, bool _dataIsDistanceMatrix = false);
+	void setDistanceMatrix(const Eigen::MatrixXd &_matrix);
 	void compute() override;
 	const Eigen::MatrixXd& getDistanceMatrix() const;
 };

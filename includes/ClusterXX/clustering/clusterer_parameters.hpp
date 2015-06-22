@@ -2,6 +2,7 @@
 #define SRC_ALGORITHMS_CLUSTERER_PARAMETERS_HPP_
 
 #include <memory>
+#include <cassert>
 #include "../metrics/metrics.hpp"
 
 namespace ClusterXX{
@@ -111,6 +112,10 @@ public:
 			} else if (method
 					== GraphTransformationMethodName::GAUSSIAN_MIXTURE) {
 				guaussianModelStdDev = param;
+			}
+			else{
+				assert(method
+					== GraphTransformationMethodName::NO_TRANSFORMATION && param == 0);
 			}
 		}
 

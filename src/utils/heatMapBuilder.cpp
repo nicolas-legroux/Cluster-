@@ -7,7 +7,7 @@
 
 void ClusterXX::Utilities::HeatMapBuilder::build(const Eigen::MatrixXd &distanceMatrix,
 		const std::string &filename, std::vector<unsigned int> classDivision,
-		unsigned int divisionLineWidth, std::array<char, 3> separatorColor) {
+		unsigned int divisionLineWidth, std::array<unsigned char, 3> separatorColor) {
 
 	std::vector<unsigned char> image;
 

@@ -42,7 +42,7 @@ double ClusterXX::Clusterer::computeAdjustedRandIndex(
 
 	for (unsigned int i = 0; i != n; ++i) {
 		int c1 = clusters[i];
-		int c2 = clusters[i];
+		int c2 = otherClustering[i];
 		++contingencyTable[c1 * K2 + c2];
 		++count1[c1];
 		++count2[c2];
@@ -68,12 +68,12 @@ double ClusterXX::Clusterer::computeAdjustedRandIndex(
 void ClusterXX::Clusterer::printClustering(
 		const std::map<int, std::string> &labelsMap,
 		const std::vector<int> &realClusters) {
-	std::cout << std::endl << "****** Showing clustering results : ******" << std::endl
-			<< std::endl;
+	std::cout << std::endl << "****** Showing clustering results : ******"
+			<< std::endl << std::endl;
 
 	unsigned int realClustersN = labelsMap.size();
-	unsigned int computedClustersN = *std::max_element(
-			clusters.cbegin(), clusters.cend()) + 1;
+	unsigned int computedClustersN = *std::max_element(clusters.cbegin(),
+			clusters.cend()) + 1;
 	std::vector<int> clusteringGraph(realClustersN * computedClustersN, 0);
 
 	assert(realClusters.size() == clusters.size());

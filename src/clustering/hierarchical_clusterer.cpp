@@ -15,8 +15,8 @@
 
 ClusterXX::Hierarchical_Clusterer::Hierarchical_Clusterer(
 		const Eigen::MatrixXd &_data,
-		const std::shared_ptr<ClustererParameters> &_params) :
-		originalData(_data) {
+		const std::shared_ptr<ClustererParameters> &_params, bool _dataIsDistanceMatrix) :
+		originalData(_data), dataIsDistanceMatrix(_dataIsDistanceMatrix) {
 	parameters = std::dynamic_pointer_cast<HierarchicalParameters>(_params);
 	if (!parameters) {
 		throw std::invalid_argument(
@@ -39,14 +39,21 @@ void ClusterXX::Hierarchical_Clusterer::initialize() {
 		std::fill(clusterSizes.begin(), clusterSizes.end(), 1);
 	}
 
-	if (parameters->getVerbose()) {
-		std::cout << "Computing distance matrix, this can take a while... "
-				<< std::flush;
-	}
 	assert(parameters->getMetric()->isDistanceMetric());
-	distanceMatrix = parameters->getMetric()->compute(originalData);
-	if (parameters->getVerbose()) {
-		std::cout << "Done." << std::endl;
+
+	if(!dataIsDistanceMatrix){
+		if (parameters->getVerbose()) {
+			std::cout << "Computing distance matrix, this can take a while... "
+					<< std::flush;
+		}
+		distanceMatrix = parameters->getMetric()->compute(originalData);
+		if (parameters->getVerbose()) {
+			std::cout << "Done." << std::endl;
+		}
+	}
+	else{
+		//Simply copy the data
+		distanceMatrix = originalData;
 	}
 
 	//Copy matrix into vector with half its size

@@ -13,8 +13,8 @@
 #include <ClusterXX/utils/utils.hpp>
 
 ClusterXX::Spectral_Clusterer::Spectral_Clusterer(const Eigen::MatrixXd &_data,
-		const std::shared_ptr<ClustererParameters> &_params) :
-		originalData(_data) {
+		const std::shared_ptr<ClustererParameters> &_params, bool _dataIsDistanceMatrix) :
+		originalData(_data), dataIsDistanceMatrix(_dataIsDistanceMatrix) {
 	parameters = std::dynamic_pointer_cast<SpectralParameters>(_params);
 	if (!parameters) {
 		throw std::invalid_argument(
@@ -23,16 +23,23 @@ ClusterXX::Spectral_Clusterer::Spectral_Clusterer(const Eigen::MatrixXd &_data,
 }
 
 void ClusterXX::Spectral_Clusterer::computeSimilarityMatrix() {
-	if (parameters->getVerbose()) {
-		std::cout << "Computing the Distance Matrix, this can take a while... "
-				<< std::flush;
+
+	if(!dataIsDistanceMatrix){
+		if (parameters->getVerbose()) {
+			std::cout << "Computing the Distance Matrix, this can take a while... "
+					<< std::flush;
+		}
+
+		distanceMatrix = parameters->getMetric()->compute(
+				originalData);
+
+		if (parameters->getVerbose()) {
+			std::cout << "Done." << std::endl;
+		}
 	}
 
-	distanceMatrix = parameters->getMetric()->compute(
-			originalData);
-
-	if (parameters->getVerbose()) {
-		std::cout << "Done." << std::endl;
+	else{
+		distanceMatrix = originalData;
 	}
 
 	//Check that all coefficients are positive
@@ -164,4 +171,3 @@ void ClusterXX::Spectral_Clusterer::compute() {
 	kmeansClusterer.compute();
 	clusters = kmeansClusterer.getClusters();
 }
-

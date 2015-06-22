@@ -20,6 +20,7 @@ private:
 	const Eigen::MatrixXd &originalData;
 	std::shared_ptr<SpectralParameters> parameters;
 	Eigen::MatrixXd distanceMatrix;
+	bool dataIsDistanceMatrix;
 	Eigen::MatrixXd similarityMatrix;
 	Eigen::MatrixXd laplacianMatrix;
 	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver;
@@ -28,8 +29,9 @@ private:
 	void computeLaplacianMatrix();
 public:
 	Spectral_Clusterer(const Eigen::MatrixXd &_data,
-			const std::shared_ptr<ClustererParameters> &_params);
+			const std::shared_ptr<ClustererParameters> &_params, bool dataIsDistanceMatrix = false);
 	void compute() override;
+	void setDistanceMatrix(const Eigen::MatrixXd &_matrix);
 
 	const Eigen::MatrixXd &getDistanceMatrix() {
 		return distanceMatrix;
