@@ -9,11 +9,14 @@
 #include <ClusterXX/clustering/kmeans_clusterer.hpp>
 #include <ClusterXX/clustering/spectral_clusterer.hpp>
 #include <iostream>
+#include <algorithm>
 #include <Eigen/Eigenvalues>
 #include <ClusterXX/utils/utils.hpp>
+#include <ClusterXX/utils/math.hpp>
 
 ClusterXX::Spectral_Clusterer::Spectral_Clusterer(const Eigen::MatrixXd &_data,
-		const std::shared_ptr<ClustererParameters> &_params, bool _dataIsDistanceMatrix) :
+		const std::shared_ptr<ClustererParameters> &_params,
+		bool _dataIsDistanceMatrix) :
 		originalData(_data), dataIsDistanceMatrix(_dataIsDistanceMatrix) {
 	parameters = std::dynamic_pointer_cast<SpectralParameters>(_params);
 	if (!parameters) {
@@ -24,32 +27,40 @@ ClusterXX::Spectral_Clusterer::Spectral_Clusterer(const Eigen::MatrixXd &_data,
 
 void ClusterXX::Spectral_Clusterer::computeSimilarityMatrix() {
 
-	if(!dataIsDistanceMatrix){
+	if (!dataIsDistanceMatrix) {
 		if (parameters->getVerbose()) {
-			std::cout << "Computing the Distance Matrix, this can take a while... "
+			std::cout
+					<< "Computing the Distance Matrix, this can take a while... "
 					<< std::flush;
 		}
 
-		distanceMatrix = parameters->getMetric()->compute(
-				originalData);
+		distanceMatrix = parameters->getMetric()->computeMatrix(originalData);
 
 		if (parameters->getVerbose()) {
 			std::cout << "Done." << std::endl;
 		}
 	}
 
-	else{
+	else {
 		distanceMatrix = originalData;
 	}
 
+	//Assert fails otherwise because of double precision
+	for (unsigned int i = 0; i < distanceMatrix.cols(); ++i) {
+		distanceMatrix(i, i) = 0;
+	}
+
 	//Check that all coefficients are positive
-	if (!(distanceMatrix.array() >= 0).all()) {
+	if (!std::all_of(distanceMatrix.data(),
+			distanceMatrix.data()
+					+ distanceMatrix.size(),
+			Utilities::Math::greaterThanZero)) {
 		std::cout << "Not all the matrix coefficients are positive."
 				<< std::endl;
 		assert(false);
 	}
 
-	//Assign correct values in the diagonal
+//Assign correct values in the diagonal
 	unsigned int N = originalData.cols();
 	for (unsigned int i = 0; i < N; ++i) {
 		//Distance matrix, set to infinity

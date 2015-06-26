@@ -46,7 +46,7 @@ void ClusterXX::Hierarchical_Clusterer::initialize() {
 			std::cout << "Computing distance matrix, this can take a while... "
 					<< std::flush;
 		}
-		distanceMatrix = parameters->getMetric()->compute(originalData);
+		distanceMatrix = parameters->getMetric()->computeMatrix(originalData);
 		if (parameters->getVerbose()) {
 			std::cout << "Done." << std::endl;
 		}

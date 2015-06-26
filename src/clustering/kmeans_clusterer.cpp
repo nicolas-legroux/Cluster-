@@ -108,7 +108,7 @@ void ClusterXX::KMeans_Clusterer::recalculateMeans() {
 
 double ClusterXX::KMeans_Clusterer::kMeansIteration() {
 
-	MatrixXd distances = SquaredEuclideanDistance().compute(medoids, data);
+	MatrixXd distances = SquaredEuclideanDistance().computeMatrix(medoids, data);
 	double newDistortion = 0;
 	for (unsigned int i; i != data.cols(); ++i) {
 		if (dataToCluster[i]) {
