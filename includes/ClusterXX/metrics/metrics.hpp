@@ -20,7 +20,9 @@ enum MetricName {
 	COSINE_DISTANCE,
 	EUCLIDEAN_DISTANCE,
 	SQUARED_EUCLIDEAN_DISTANCE,
-	MANHATTAN_DISTANCE
+	MANHATTAN_DISTANCE,
+	JACCARD_SIMILARITY,
+	JACCARD_DISTANCE
 };
 } //End of MetricName namespace
 
@@ -43,9 +45,9 @@ public:
 	}
 	virtual double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const = 0;
-	virtual Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	virtual Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const = 0;
-	virtual Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const = 0;
+	virtual Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const = 0;
 	virtual bool isDistanceMetric() const = 0;
 	virtual std::string toString() const = 0;
 	virtual ~Metric() = default;
@@ -61,9 +63,9 @@ class SquaredEuclideanDistance: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return true;
 	}
@@ -78,9 +80,9 @@ public:
 			const Eigen::VectorXd &right) const;
 	double computeVector(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return true;
 	}
@@ -93,9 +95,9 @@ class ManhattanDistance: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return true;
 	}
@@ -108,9 +110,9 @@ class CosineSimilarity: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return false;
 	}
@@ -123,9 +125,9 @@ class CosineAbsoluteSimilarity: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return false;
 	}
@@ -138,9 +140,9 @@ class CosineDistance: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return true;
 	}
@@ -153,9 +155,9 @@ class PearsonCorrelation: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return false;
 	}
@@ -168,9 +170,9 @@ class PearsonAbsoluteCorrelation: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return false;
 	}
@@ -183,9 +185,9 @@ class PearsonDistance: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return true;
 	}
@@ -198,9 +200,9 @@ class SpearmanCorrelation: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return false;
 	}
@@ -213,9 +215,9 @@ class SpearmanAbsoluteCorrelation: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return false;
 	}
@@ -228,14 +230,44 @@ class SpearmanDistance: public Metric {
 public:
 	double compute(const Eigen::VectorXd &left,
 			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X,
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
 			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd compute(const Eigen::MatrixXd &X) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
 	bool isDistanceMetric() const {
 		return true;
 	}
 	std::string toString() const{
 		return "spearman-distance";
+	}
+};
+
+class JaccardSimilarity : public Metric {
+public:
+	double compute(const Eigen::VectorXd &left,
+			const Eigen::VectorXd &right) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
+			const Eigen::MatrixXd &Y) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
+	bool isDistanceMetric() const {
+		return false;
+	}
+	std::string toString() const{
+		return "jaccard-similarity";
+	}
+};
+
+class JaccardDistance : public Metric {
+public:
+	double compute(const Eigen::VectorXd &left,
+			const Eigen::VectorXd &right) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
+			const Eigen::MatrixXd &Y) const;
+	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
+	bool isDistanceMetric() const {
+		return true;
+	}
+	std::string toString() const{
+		return "jaccard-distance";
 	}
 };
 

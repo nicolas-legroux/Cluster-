@@ -8,6 +8,7 @@
 #include <Eigen/Dense>
 #include <ClusterXX/metrics/metrics.hpp>
 #include <ClusterXX/utils/utils.hpp>
+#include <ClusterXX/utils/math.hpp>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -17,7 +18,7 @@ double ClusterXX::SquaredEuclideanDistance::compute(const Eigen::VectorXd &left,
 	return (left - right).squaredNorm();
 }
 
-MatrixXd ClusterXX::SquaredEuclideanDistance::compute(const MatrixXd &X,
+MatrixXd ClusterXX::SquaredEuclideanDistance::computeMatrix(const MatrixXd &X,
 		const MatrixXd &Y) const {
 	if (getVerbose()) {
 		std::cout << "Computing Squared Euclidean Distance..." << std::endl;
@@ -32,7 +33,7 @@ MatrixXd ClusterXX::SquaredEuclideanDistance::compute(const MatrixXd &X,
 	return D - 2 * X.transpose() * Y;
 }
 
-MatrixXd ClusterXX::SquaredEuclideanDistance::compute(const MatrixXd &X) const {
+MatrixXd ClusterXX::SquaredEuclideanDistance::computeMatrix(const MatrixXd &X) const {
 	if (getVerbose()) {
 		std::cout << "Computing Squared Euclidean Distance..." << std::endl;
 	}
@@ -49,25 +50,20 @@ double ClusterXX::EuclideanDistance::compute(const Eigen::VectorXd &left,
 	return std::sqrt(SquaredEuclideanDistance().compute(left, right));
 }
 
-double ClusterXX::EuclideanDistance::computeVector(const Eigen::VectorXd &left,
-		const Eigen::VectorXd &right) const {
-	return std::sqrt(SquaredEuclideanDistance().compute(left, right));
-}
-
-MatrixXd ClusterXX::EuclideanDistance::compute(const MatrixXd &X,
+MatrixXd ClusterXX::EuclideanDistance::computeMatrix(const MatrixXd &X,
 		const MatrixXd &Y) const {
 	if (getVerbose()) {
 		std::cout << "Computing Euclidean Distance..." << std::endl;
 	}
 	std::cout << "OK" << std::endl;
-	return SquaredEuclideanDistance().compute(X, Y).array().sqrt();
+	return SquaredEuclideanDistance().computeMatrix(X, Y).array().sqrt();
 }
 
-MatrixXd ClusterXX::EuclideanDistance::compute(const MatrixXd &X) const {
+MatrixXd ClusterXX::EuclideanDistance::computeMatrix(const MatrixXd &X) const {
 	if (getVerbose()) {
 		std::cout << "Computing Euclidean Distance..." << std::endl;
 	}
-	return SquaredEuclideanDistance().compute(X).array().sqrt();
+	return SquaredEuclideanDistance().computeMatrix(X).array().sqrt();
 }
 
 double ClusterXX::ManhattanDistance::compute(const Eigen::VectorXd &left,
@@ -75,7 +71,7 @@ double ClusterXX::ManhattanDistance::compute(const Eigen::VectorXd &left,
 	return (left - right).lpNorm<1>();
 }
 
-MatrixXd ClusterXX::ManhattanDistance::compute(const MatrixXd &X,
+MatrixXd ClusterXX::ManhattanDistance::computeMatrix(const MatrixXd &X,
 		const MatrixXd &Y) const {
 	if (getVerbose()) {
 		std::cout << "Computing Manhattan Distance..." << std::endl;
@@ -85,14 +81,14 @@ MatrixXd ClusterXX::ManhattanDistance::compute(const MatrixXd &X,
 	MatrixXd D(N, M);
 	for (unsigned int i = 0; i < N; ++i) {
 		for (unsigned int j = 0; j < M; ++j) {
-			double dist = (X.col(i) - X.col(j)).lpNorm<1>();
+			double dist = (X.col(i) - Y.col(j)).lpNorm<1>();
 			D(i, j) = dist;
 		}
 	}
 	return D;
 }
 
-MatrixXd ClusterXX::ManhattanDistance::compute(const MatrixXd &X) const {
+MatrixXd ClusterXX::ManhattanDistance::computeMatrix(const MatrixXd &X) const {
 	unsigned int N = X.cols();
 	if (getVerbose()) {
 		std::cout << "Computing Manhattan Distance..." << std::endl;
@@ -113,7 +109,8 @@ double ClusterXX::CosineSimilarity::compute(const VectorXd &left,
 	return left.dot(right) / (left.norm() * right.norm());
 }
 
-MatrixXd ClusterXX::CosineSimilarity::compute(const MatrixXd &X, const MatrixXd &Y) const {
+MatrixXd ClusterXX::CosineSimilarity::computeMatrix(const MatrixXd &X,
+		const MatrixXd &Y) const {
 	if (getVerbose()) {
 		std::cout << "Computing Cosine Similarity..." << std::endl;
 	}
@@ -123,7 +120,7 @@ MatrixXd ClusterXX::CosineSimilarity::compute(const MatrixXd &X, const MatrixXd 
 	return D;
 }
 
-MatrixXd ClusterXX::CosineSimilarity::compute(const MatrixXd &X) const {
+MatrixXd ClusterXX::CosineSimilarity::computeMatrix(const MatrixXd &X) const {
 	if (getVerbose()) {
 		std::cout << "Computing Cosine Similarity..." << std::endl;
 	}
@@ -138,37 +135,39 @@ double ClusterXX::CosineAbsoluteSimilarity::compute(const VectorXd &left,
 	return std::fabs(CosineSimilarity().compute(left, right));
 }
 
-MatrixXd ClusterXX::CosineAbsoluteSimilarity::compute(const MatrixXd &X,
+MatrixXd ClusterXX::CosineAbsoluteSimilarity::computeMatrix(const MatrixXd &X,
 		const MatrixXd &Y) const {
 	if (getVerbose()) {
 		std::cout << "Computing Cosine Absolute Similarity..." << std::endl;
 	}
-	return CosineSimilarity().compute(X, Y).array().abs();
+	return CosineSimilarity().computeMatrix(X, Y).array().abs();
 }
 
-MatrixXd ClusterXX::CosineAbsoluteSimilarity::compute(const MatrixXd &X) const {
+MatrixXd ClusterXX::CosineAbsoluteSimilarity::computeMatrix(const MatrixXd &X) const {
 	if (getVerbose()) {
 		std::cout << "Computing Cosine Absolute Similarity..." << std::endl;
 	}
-	return CosineSimilarity().compute(X).array().abs();
+	return CosineSimilarity().computeMatrix(X).array().abs();
 }
 
-double ClusterXX::CosineDistance::compute(const VectorXd &X, const VectorXd &Y) const {
+double ClusterXX::CosineDistance::compute(const VectorXd &X,
+		const VectorXd &Y) const {
 	return 1.0 - CosineAbsoluteSimilarity().compute(X, Y);
 }
 
-MatrixXd ClusterXX::CosineDistance::compute(const MatrixXd &X, const MatrixXd &Y) const {
+MatrixXd ClusterXX::CosineDistance::computeMatrix(const MatrixXd &X,
+		const MatrixXd &Y) const {
 	if (getVerbose()) {
 		std::cout << "Computing Cosine Distance..." << std::endl;
 	}
-	return 1.0 - CosineAbsoluteSimilarity().compute(X, Y).array();
+	return 1.0 - CosineAbsoluteSimilarity().computeMatrix(X, Y).array();
 }
 
-MatrixXd ClusterXX::CosineDistance::compute(const MatrixXd &X) const {
+MatrixXd ClusterXX::CosineDistance::computeMatrix(const MatrixXd &X) const {
 	if (getVerbose()) {
 		std::cout << "Computing Cosine Distance..." << std::endl;
 	}
-	return 1.0 - CosineAbsoluteSimilarity().compute(X).array();
+	return 1.0 - CosineAbsoluteSimilarity().computeMatrix(X).array();
 }
 
 double ClusterXX::PearsonCorrelation::compute(const VectorXd &left,
@@ -186,7 +185,7 @@ double ClusterXX::PearsonCorrelation::compute(const VectorXd &left,
 			/ (left.rows() * stddev_left * stddev_right);
 }
 
-MatrixXd ClusterXX::PearsonCorrelation::compute(const MatrixXd &X,
+MatrixXd ClusterXX::PearsonCorrelation::computeMatrix(const MatrixXd &X,
 		const MatrixXd &Y) const {
 	if (getVerbose()) {
 		std::cout << "Computing Pearson Correlation..." << std::endl;
@@ -205,7 +204,7 @@ MatrixXd ClusterXX::PearsonCorrelation::compute(const MatrixXd &X,
 			/ (double) X.rows();
 }
 
-MatrixXd ClusterXX::PearsonCorrelation::compute(const MatrixXd &X) const {
+MatrixXd ClusterXX::PearsonCorrelation::computeMatrix(const MatrixXd &X) const {
 	if (getVerbose()) {
 		std::cout << "Computing Pearson Correlation..." << std::endl;
 	}
@@ -223,25 +222,28 @@ double ClusterXX::PearsonAbsoluteCorrelation::compute(const VectorXd &left,
 	return std::fabs(PearsonCorrelation().compute(left, right));
 }
 
-MatrixXd ClusterXX::PearsonAbsoluteCorrelation::compute(const MatrixXd &X,
+MatrixXd ClusterXX::PearsonAbsoluteCorrelation::computeMatrix(const MatrixXd &X,
 		const MatrixXd &Y) const {
-	return PearsonCorrelation().compute(X, Y).array().abs();
+	return PearsonCorrelation().computeMatrix(X, Y).array().abs();
 }
 
-MatrixXd ClusterXX::PearsonAbsoluteCorrelation::compute(const MatrixXd &X) const {
-	return PearsonCorrelation().compute(X).array().abs();
+MatrixXd ClusterXX::PearsonAbsoluteCorrelation::computeMatrix(
+		const MatrixXd &X) const {
+	return PearsonCorrelation().computeMatrix(X).array().abs();
 }
 
-double ClusterXX::PearsonDistance::compute(const VectorXd &X, const VectorXd &Y) const {
-	return 1.0 - PearsonAbsoluteCorrelation().compute(X, Y);
+double ClusterXX::PearsonDistance::compute(const VectorXd &X,
+		const VectorXd &Y) const {
+	return std::fabs(1.0 - PearsonAbsoluteCorrelation().compute(X, Y));
 }
 
-MatrixXd ClusterXX::PearsonDistance::compute(const MatrixXd &X, const MatrixXd &Y) const {
-	return 1.0 - PearsonAbsoluteCorrelation().compute(X, Y).array();
+MatrixXd ClusterXX::PearsonDistance::computeMatrix(const MatrixXd &X,
+		const MatrixXd &Y) const {
+	return 1.0 - PearsonAbsoluteCorrelation().computeMatrix(X, Y).array();
 }
 
-MatrixXd ClusterXX::PearsonDistance::compute(const MatrixXd &X) const {
-	return 1.0 - PearsonAbsoluteCorrelation().compute(X).array();
+MatrixXd ClusterXX::PearsonDistance::computeMatrix(const MatrixXd &X) const {
+	return 1.0 - PearsonAbsoluteCorrelation().computeMatrix(X).array();
 }
 
 double ClusterXX::SpearmanCorrelation::compute(const VectorXd &left,
@@ -254,7 +256,7 @@ double ClusterXX::SpearmanCorrelation::compute(const VectorXd &left,
 			Utilities::stl2Eigen(l));
 }
 
-MatrixXd ClusterXX::SpearmanCorrelation::compute(const MatrixXd &X,
+MatrixXd ClusterXX::SpearmanCorrelation::computeMatrix(const MatrixXd &X,
 		const MatrixXd &Y) const {
 	unsigned int N = X.cols();
 	unsigned int M = Y.cols();
@@ -271,10 +273,10 @@ MatrixXd ClusterXX::SpearmanCorrelation::compute(const MatrixXd &X,
 		Utilities::computeRank(&v);
 		YCopy.col(i) = Utilities::stl2Eigen(v);
 	}
-	return PearsonCorrelation().compute(XCopy, YCopy);
+	return PearsonCorrelation().computeMatrix(XCopy, YCopy);
 }
 
-MatrixXd ClusterXX::SpearmanCorrelation::compute(const MatrixXd &X) const {
+MatrixXd ClusterXX::SpearmanCorrelation::computeMatrix(const MatrixXd &X) const {
 	unsigned int N = X.cols();
 	unsigned int dim = X.rows();
 	MatrixXd XCopy(dim, N);
@@ -283,7 +285,7 @@ MatrixXd ClusterXX::SpearmanCorrelation::compute(const MatrixXd &X) const {
 		Utilities::computeRank(&v);
 		XCopy.col(i) = Utilities::stl2Eigen(v);
 	}
-	return PearsonCorrelation().compute(XCopy);
+	return PearsonCorrelation().computeMatrix(XCopy);
 }
 
 double ClusterXX::SpearmanAbsoluteCorrelation::compute(const VectorXd &left,
@@ -291,28 +293,94 @@ double ClusterXX::SpearmanAbsoluteCorrelation::compute(const VectorXd &left,
 	return std::fabs(SpearmanCorrelation().compute(left, right));
 }
 
-MatrixXd ClusterXX::SpearmanAbsoluteCorrelation::compute(const MatrixXd &X,
+MatrixXd ClusterXX::SpearmanAbsoluteCorrelation::computeMatrix(const MatrixXd &X,
 		const MatrixXd &Y) const {
-	return SpearmanCorrelation().compute(X, Y).array().abs();
+	return SpearmanCorrelation().computeMatrix(X, Y).array().abs();
 }
 
-MatrixXd ClusterXX::SpearmanAbsoluteCorrelation::compute(const MatrixXd &X) const {
-	return SpearmanCorrelation().compute(X).array().abs();
+MatrixXd ClusterXX::SpearmanAbsoluteCorrelation::computeMatrix(
+		const MatrixXd &X) const {
+	return SpearmanCorrelation().computeMatrix(X).array().abs();
 }
 
-double ClusterXX::SpearmanDistance::compute(const VectorXd &X, const VectorXd &Y) const {
+double ClusterXX::SpearmanDistance::compute(const VectorXd &X,
+		const VectorXd &Y) const {
 	return 1.0 - SpearmanAbsoluteCorrelation().compute(X, Y);
 }
 
-MatrixXd ClusterXX::SpearmanDistance::compute(const MatrixXd &X, const MatrixXd &Y) const {
-	return 1.0 - SpearmanAbsoluteCorrelation().compute(X, Y).array();
+MatrixXd ClusterXX::SpearmanDistance::computeMatrix(const MatrixXd &X,
+		const MatrixXd &Y) const {
+	return 1.0 - SpearmanAbsoluteCorrelation().computeMatrix(X, Y).array();
 }
 
-MatrixXd ClusterXX::SpearmanDistance::compute(const MatrixXd &X) const {
-	return 1.0 - SpearmanAbsoluteCorrelation().compute(X).array();
+MatrixXd ClusterXX::SpearmanDistance::computeMatrix(const MatrixXd &X) const {
+	return 1.0 - SpearmanAbsoluteCorrelation().computeMatrix(X).array();
 }
 
-std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(MetricName::MetricName metricName) {
+double ClusterXX::JaccardSimilarity::compute(const VectorXd &X,
+		const VectorXd &Y) const {
+	double jaccard_intersection = 0;
+	double jaccard_union = 0;
+	for (unsigned int i = 0; i < X.rows(); ++i) {
+		double x = X(i);
+		double y = Y(i);
+		bool b1 = Utilities::Math::equal(x, 1);
+		bool b2 = Utilities::Math::equal(y, 1);
+		jaccard_intersection += (b1 && b2);
+		jaccard_union += (b1 || b2);
+	}
+	return jaccard_intersection / jaccard_union;
+}
+
+MatrixXd ClusterXX::JaccardSimilarity::computeMatrix(const MatrixXd &X,
+		const MatrixXd &Y) const {
+	if (getVerbose()) {
+		std::cout << "Computing Jaccard Similarity..." << std::endl;
+	}
+	unsigned int N = X.cols();
+	unsigned int M = Y.cols();
+	MatrixXd D(N, M);
+	for (unsigned int i = 0; i < N; ++i) {
+		for (unsigned int j = 0; j < M; ++j) {
+			double dist = compute(X.col(i), Y.col(j));
+			D(i, j) = dist;
+		}
+	}
+	return D;
+}
+
+MatrixXd ClusterXX::JaccardSimilarity::computeMatrix(const MatrixXd &X) const {
+	if (getVerbose())  {
+		std::cout << "Computing Jaccard Similarity..." << std::endl;
+	}
+	unsigned int N = X.cols();
+	MatrixXd D(N, N);
+	for (unsigned int i = 0; i < N; ++i) {
+		for (unsigned int j = i; j < N; ++j) {
+			double dist = compute(X.col(i), X.col(j));
+			D(i, j) = dist;
+			D(j, i) = dist;
+		}
+	}
+	return D;
+}
+
+double ClusterXX::JaccardDistance::compute(const VectorXd &X,
+		const VectorXd &Y) const {
+	return 1.0-JaccardSimilarity().compute(X, Y);
+}
+
+MatrixXd ClusterXX::JaccardDistance::computeMatrix(const MatrixXd &X,
+		const MatrixXd &Y) const {
+	return 1.0-JaccardSimilarity().computeMatrix(X, Y).array();
+}
+
+MatrixXd ClusterXX::JaccardDistance::computeMatrix(const MatrixXd &X) const {
+	return 1.0-JaccardSimilarity().computeMatrix(X).array();
+}
+
+std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(
+		MetricName::MetricName metricName) {
 	switch (metricName) {
 	case MetricName::COSINE_ABSOLUTE_SIMILARITY:
 		return std::make_shared<CosineAbsoluteSimilarity>();
@@ -338,6 +406,10 @@ std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(MetricName::MetricName
 		return std::make_shared<SpearmanCorrelation>();
 	case MetricName::SPEARMAN_DISTANCE:
 		return std::make_shared<SpearmanDistance>();
+	case MetricName::JACCARD_SIMILARITY:
+		return std::make_shared<JaccardSimilarity>();
+	case MetricName::JACCARD_DISTANCE:
+		return std::make_shared<JaccardDistance>();
 	default:
 		assert(false);
 		return std::make_shared<EuclideanDistance>(); //Eclipse complains otherwise

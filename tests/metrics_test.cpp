@@ -32,7 +32,7 @@ void Test::testMetrics1() {
 	start = std::clock();
 
 	ClusterXX::SquaredEuclideanDistance ed;
-	MatrixXd dist = ed.compute(X);
+	MatrixXd dist = ed.computeMatrix(X);
 
 	//cout << dist << endl << endl;
 
