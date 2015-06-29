@@ -68,7 +68,7 @@ double ClusterXX::Clusterer::computeAdjustedRandIndex(
 void ClusterXX::Clusterer::printClustering(
 		const std::map<int, std::string> &labelsMap,
 		const std::vector<int> &realClusters) {
-	std::cout << std::endl << std::endl << "****** Clustering results : ******"
+	std::cout << std::endl << "****** Clustering results : ******"
 			<< std::endl << std::endl;
 
 	unsigned int realClustersN = labelsMap.size();

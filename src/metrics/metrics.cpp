@@ -33,7 +33,8 @@ MatrixXd ClusterXX::SquaredEuclideanDistance::computeMatrix(const MatrixXd &X,
 	return D - 2 * X.transpose() * Y;
 }
 
-MatrixXd ClusterXX::SquaredEuclideanDistance::computeMatrix(const MatrixXd &X) const {
+MatrixXd ClusterXX::SquaredEuclideanDistance::computeMatrix(
+		const MatrixXd &X) const {
 	if (getVerbose()) {
 		std::cout << "Computing Squared Euclidean Distance..." << std::endl;
 	}
@@ -143,7 +144,8 @@ MatrixXd ClusterXX::CosineAbsoluteSimilarity::computeMatrix(const MatrixXd &X,
 	return CosineSimilarity().computeMatrix(X, Y).array().abs();
 }
 
-MatrixXd ClusterXX::CosineAbsoluteSimilarity::computeMatrix(const MatrixXd &X) const {
+MatrixXd ClusterXX::CosineAbsoluteSimilarity::computeMatrix(
+		const MatrixXd &X) const {
 	if (getVerbose()) {
 		std::cout << "Computing Cosine Absolute Similarity..." << std::endl;
 	}
@@ -276,7 +278,8 @@ MatrixXd ClusterXX::SpearmanCorrelation::computeMatrix(const MatrixXd &X,
 	return PearsonCorrelation().computeMatrix(XCopy, YCopy);
 }
 
-MatrixXd ClusterXX::SpearmanCorrelation::computeMatrix(const MatrixXd &X) const {
+MatrixXd ClusterXX::SpearmanCorrelation::computeMatrix(
+		const MatrixXd &X) const {
 	unsigned int N = X.cols();
 	unsigned int dim = X.rows();
 	MatrixXd XCopy(dim, N);
@@ -293,8 +296,8 @@ double ClusterXX::SpearmanAbsoluteCorrelation::compute(const VectorXd &left,
 	return std::fabs(SpearmanCorrelation().compute(left, right));
 }
 
-MatrixXd ClusterXX::SpearmanAbsoluteCorrelation::computeMatrix(const MatrixXd &X,
-		const MatrixXd &Y) const {
+MatrixXd ClusterXX::SpearmanAbsoluteCorrelation::computeMatrix(
+		const MatrixXd &X, const MatrixXd &Y) const {
 	return SpearmanCorrelation().computeMatrix(X, Y).array().abs();
 }
 
@@ -350,7 +353,7 @@ MatrixXd ClusterXX::JaccardSimilarity::computeMatrix(const MatrixXd &X,
 }
 
 MatrixXd ClusterXX::JaccardSimilarity::computeMatrix(const MatrixXd &X) const {
-	if (getVerbose())  {
+	if (getVerbose()) {
 		std::cout << "Computing Jaccard Similarity..." << std::endl;
 	}
 	unsigned int N = X.cols();
@@ -367,20 +370,20 @@ MatrixXd ClusterXX::JaccardSimilarity::computeMatrix(const MatrixXd &X) const {
 
 double ClusterXX::JaccardDistance::compute(const VectorXd &X,
 		const VectorXd &Y) const {
-	return 1.0-JaccardSimilarity().compute(X, Y);
+	return 1.0 - JaccardSimilarity().compute(X, Y);
 }
 
 MatrixXd ClusterXX::JaccardDistance::computeMatrix(const MatrixXd &X,
 		const MatrixXd &Y) const {
-	return 1.0-JaccardSimilarity().computeMatrix(X, Y).array();
+	return 1.0 - JaccardSimilarity().computeMatrix(X, Y).array();
 }
 
 MatrixXd ClusterXX::JaccardDistance::computeMatrix(const MatrixXd &X) const {
-	return 1.0-JaccardSimilarity().computeMatrix(X).array();
+	return 1.0 - JaccardSimilarity().computeMatrix(X).array();
 }
 
 std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(
-		MetricName::MetricName metricName) {
+		MetricName metricName) {
 	switch (metricName) {
 	case MetricName::COSINE_ABSOLUTE_SIMILARITY:
 		return std::make_shared<CosineAbsoluteSimilarity>();
@@ -413,5 +416,44 @@ std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(
 	default:
 		assert(false);
 		return std::make_shared<EuclideanDistance>(); //Eclipse complains otherwise
+	}
+}
+
+std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(
+		const std::string &s) {
+	if (s == "absolute-cosine" || s == "cosine-absolute-similarity") {
+		return std::make_shared<CosineAbsoluteSimilarity>();
+	} else if (s == "cosine-distance") {
+		return std::make_shared<CosineDistance>();
+	} else if (s == "cosine" || s == "cosine-smilarity") {
+		return std::make_shared<CosineSimilarity>();
+	} else if (s == "euclidean" || s == "euclidean-distance") {
+		return std::make_shared<EuclideanDistance>();
+	} else if (s == "squared-euclidean" || s == "squared-euclidean-distance") {
+		return std::make_shared<SquaredEuclideanDistance>();
+	} else if (s == "manhattan" || s == "manhattan-distance") {
+		return std::make_shared<ManhattanDistance>();
+	} else if (s == "absolute-pearson" || s == "pearson-absolute-correlation") {
+		return std::make_shared<PearsonAbsoluteCorrelation>();
+	} else if (s == "pearson" || s == "pearson-correlation") {
+		return std::make_shared<PearsonCorrelation>();
+	} else if (s == "pearson-distance") {
+		return std::make_shared<PearsonDistance>();
+	} else if (s == "absolute-spearman"
+			|| s == "spearman-absolute-correlation") {
+		return std::make_shared<SpearmanAbsoluteCorrelation>();
+	} else if (s == "spearman" || s == "spearman-correlation") {
+		return std::make_shared<SpearmanCorrelation>();
+	} else if (s == "spearman-distance") {
+		return std::make_shared<SpearmanDistance>();
+	} else if (s == "jaccard" || s == "jaccard-similarity") {
+		return std::make_shared<JaccardSimilarity>();
+	} else if (s == "jaccard-distance") {
+		return std::make_shared<JaccardDistance>();
+	} else {
+		std::cerr
+				<< "Couldn't match metric with name '" + s
+						+ "', returning default." << std::endl;
+		return std::make_shared<EuclideanDistance>();
 	}
 }

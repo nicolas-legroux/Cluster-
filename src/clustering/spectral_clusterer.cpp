@@ -170,7 +170,7 @@ void ClusterXX::Spectral_Clusterer::compute() {
 	Eigen::MatrixXd dataForKMeans = eigenSolver.eigenvectors().block(0, 0, N,
 			parameters->getK()).transpose();
 
-	//TODO constant
+	//TODO ugly constant
 	std::shared_ptr<ClustererParameters> kMeansParams = std::make_shared<
 			KMeansParameters>(parameters->getK(), 1000);
 

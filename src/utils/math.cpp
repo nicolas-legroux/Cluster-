@@ -17,11 +17,11 @@ bool ClusterXX::Utilities::Math::equal(double x, double y){
 }
 
 bool ClusterXX::Utilities::Math::greaterThanZero(double x){
-	return x>EPSILON;
+	return x>-1.0*EPSILON;
 }
 
 bool ClusterXX::Utilities::Math::lessThanZero(double x){
-	return x<-1.0*EPSILON;
+	return x<EPSILON;
 }
 
 bool ClusterXX::Utilities::Math::greaterThan(double x, double y){

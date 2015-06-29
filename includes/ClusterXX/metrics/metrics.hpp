@@ -7,7 +7,6 @@
 
 namespace ClusterXX{
 
-namespace MetricName {
 enum MetricName {
 	PEARSON_CORRELATION,
 	PEARSON_ABSOLUTE_CORRELATION,
@@ -24,8 +23,6 @@ enum MetricName {
 	JACCARD_SIMILARITY,
 	JACCARD_DISTANCE
 };
-} //End of MetricName namespace
-
 
 /*
  *
@@ -273,7 +270,9 @@ public:
 
 //utility functions
 
-std::shared_ptr<Metric> buildMetric(MetricName::MetricName metricName);
+std::shared_ptr<Metric> buildMetric(MetricName metricName);
+std::shared_ptr<Metric> buildMetric(const std::string &s);
+
 
 } //End of namespace ClusterXX
 
