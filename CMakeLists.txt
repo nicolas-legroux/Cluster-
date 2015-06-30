@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
 
 set(PROJECT_NAME ClusterXX-Test)
 
 project(${PROJECT_NAME} CXX)
 
-set(EIGEN_INCLUDE_DIR /home/nicolas/opt/Eigen/include/eigen3)
+set(EIGEN_INCLUDE_DIR $ENV{HOME}/opt/Eigen/include/eigen3)
 
 set(CLUSTERXX_ROOT_DIR ${CMAKE_SOURCE_DIR})
 set(CLUSTERXX_INCLUDE_DIR ${CLUSTERXX_ROOT_DIR}/includes)
@@ -12,7 +12,7 @@ set(CLUSTERXX_INCLUDE_DIR ${CLUSTERXX_ROOT_DIR}/includes)
 set(LODEPNG_ROOT_DIR ${CLUSTERXX_ROOT_DIR}/lib/lodepng)
 set(LODEPNG_INCLUDE_DIR ${LODEPNG_ROOT_DIR})
 
-set(CMAKE_CXX_FLAGS "-O3 -std=c++14 -fopenmp")
+set(CMAKE_CXX_FLAGS "-Wall -O3 -std=c++14 -fopenmp")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${PROJECT_BINARY_DIR}/lib)
 
