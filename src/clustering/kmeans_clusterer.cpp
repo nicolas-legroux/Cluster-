@@ -110,7 +110,7 @@ double ClusterXX::KMeans_Clusterer::kMeansIteration() {
 
 	MatrixXd distances = SquaredEuclideanDistance().computeMatrix(medoids, data);
 	double newDistortion = 0;
-	for (unsigned int i; i != data.cols(); ++i) {
+	for (unsigned int i = 0; i != data.cols(); ++i) {
 		if (dataToCluster[i]) {
 			newDistortion += std::sqrt(distances.col(i).minCoeff(&clusters[i]))
 					/ data.cols();
