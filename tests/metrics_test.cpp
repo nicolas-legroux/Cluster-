@@ -20,25 +20,24 @@ using Eigen::MatrixXd;
 
 void Test::testMetrics1() {
 
-	std::clock_t start;
-	double duration;
-
-	Eigen::MatrixXd X = MatrixXd::Random(1, 2000);
-	Eigen::MatrixXd Y = MatrixXd::Random(1, 2);
+	Eigen::MatrixXd X = MatrixXd::Random(20000, 1000);
+	Eigen::MatrixXd Y = MatrixXd::Random(5, 5);
 
 	//cout << "left: " << endl << left << endl << endl;
 	//cout << "right: " << endl << right << endl << endl;
 
-	start = std::clock();
+	auto start = std::time(NULL);
 
-	ClusterXX::SquaredEuclideanDistance ed;
+	ClusterXX::ManhattanDistance ed;
+
 	MatrixXd dist = ed.computeMatrix(X);
 
-	//cout << dist << endl << endl;
+	//cout << X << std::endl << dist << endl << endl;
 
-	duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+	auto end = std::time(NULL);
+	auto duration = end - start;
 
-	std::cout << "Duration: " << duration << '\n';
+	std::cout << start << '\n' << end << '\n' << duration << std::flush;
 
 }
 

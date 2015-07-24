@@ -4,14 +4,16 @@
 #include <string>
 #include <vector>
 #include "tests.hpp"
+#include <ctime>
 #include <Eigen/Dense>
 #include <ClusterXX/metrics/metrics.hpp>
 
-int main() {
-	Eigen::VectorXd v(5);
-	v << 1, 3, -5, 1, 0;
-	std::cout << v << std::endl << std::endl;
-	std::sort(v.data(), v.data()+v.size());
-	std::cout << v;
+unsigned int N = 1000;
+unsigned int DIM = 20000;
 
+std::vector<double> X(N * DIM);
+std::vector<double> D(N * N);
+
+int main() {
+	Test::small_spectral_test();
 }

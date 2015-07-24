@@ -15,7 +15,8 @@
 
 ClusterXX::Hierarchical_Clusterer::Hierarchical_Clusterer(
 		const Eigen::MatrixXd &_data,
-		const std::shared_ptr<ClustererParameters> &_params, bool _dataIsDistanceMatrix) :
+		const std::shared_ptr<ClustererParameters> &_params,
+		bool _dataIsDistanceMatrix) :
 		originalData(_data), dataIsDistanceMatrix(_dataIsDistanceMatrix) {
 	parameters = std::dynamic_pointer_cast<HierarchicalParameters>(_params);
 	if (!parameters) {
@@ -39,9 +40,7 @@ void ClusterXX::Hierarchical_Clusterer::initialize() {
 		std::fill(clusterSizes.begin(), clusterSizes.end(), 1);
 	}
 
-	assert(parameters->getMetric()->isDistanceMetric());
-
-	if(!dataIsDistanceMatrix){
+	if (!dataIsDistanceMatrix) {
 		if (parameters->getVerbose()) {
 			std::cout << "Computing distance matrix, this can take a while... "
 					<< std::flush;
@@ -50,8 +49,7 @@ void ClusterXX::Hierarchical_Clusterer::initialize() {
 		if (parameters->getVerbose()) {
 			std::cout << "Done." << std::endl;
 		}
-	}
-	else{
+	} else {
 		//Simply copy the data
 		distanceMatrix = originalData;
 	}
@@ -78,8 +76,7 @@ double ClusterXX::Hierarchical_Clusterer::worstPossibleDistance() const {
 	if (parameters->getMetric()->isDistanceMetric()) {
 		return std::numeric_limits<double>::infinity();
 	} else {
-		assert(false);
-		return 0;
+		return -1.0 * std::numeric_limits<double>::infinity();
 	}
 }
 
@@ -88,8 +85,7 @@ bool ClusterXX::Hierarchical_Clusterer::isBetterDistance(double oldDistance,
 	if (parameters->getMetric()->isDistanceMetric()) {
 		return newDistance < oldDistance;
 	} else {
-		assert(false);
-		return false;
+		return newDistance > oldDistance;
 	}
 }
 
@@ -122,14 +118,14 @@ void ClusterXX::Hierarchical_Clusterer::updateDistances(int deletedCluster,
 				if (parameters->getMetric()->isDistanceMetric()) {
 					getDistance(i, mergedCluster) = std::max(dist1, dist2);
 				} else {
-					assert(false);
+					getDistance(i, mergedCluster) = std::min(dist1, dist2);
 				}
 			} else if (parameters->getLinkageMethod()
 					== HierarchicalParameters::SINGLE) {
 				if (parameters->getMetric()->isDistanceMetric()) {
 					getDistance(i, mergedCluster) = std::min(dist1, dist2);
 				} else {
-					assert(false);
+					getDistance(i, mergedCluster) = std::max(dist1, dist2);
 				}
 			} else if (parameters->getLinkageMethod()
 					== HierarchicalParameters::AVERAGE) {

@@ -8,11 +8,11 @@
 #include <ClusterXX/clustering/clusterer_parameters.hpp>
 #include <ClusterXX/clustering/kmeans_clusterer.hpp>
 #include <ClusterXX/clustering/spectral_clusterer.hpp>
+#include <ClusterXX/utils/utils.hpp>
+#include <ClusterXX/utils/math.hpp>
 #include <iostream>
 #include <algorithm>
 #include <Eigen/Eigenvalues>
-#include <ClusterXX/utils/utils.hpp>
-#include <ClusterXX/utils/math.hpp>
 
 ClusterXX::Spectral_Clusterer::Spectral_Clusterer(const Eigen::MatrixXd &_data,
 		const std::shared_ptr<ClustererParameters> &_params,
@@ -52,15 +52,14 @@ void ClusterXX::Spectral_Clusterer::computeSimilarityMatrix() {
 
 	//Check that all coefficients are positive
 	if (!std::all_of(distanceMatrix.data(),
-			distanceMatrix.data()
-					+ distanceMatrix.size(),
+			distanceMatrix.data() + distanceMatrix.size(),
 			Utilities::Math::greaterThanZero)) {
 		std::cout << "Not all the matrix coefficients are positive."
 				<< std::endl;
 		assert(false);
 	}
 
-//Assign correct values in the diagonal
+	//Assign correct values in the diagonal
 	unsigned int N = originalData.cols();
 	for (unsigned int i = 0; i < N; ++i) {
 		//Distance matrix, set to infinity
@@ -74,7 +73,6 @@ void ClusterXX::Spectral_Clusterer::computeSimilarityMatrix() {
 	}
 
 	//Initialize similarity Matrix
-
 	if (parameters->getMetric()->isDistanceMetric()
 			&& parameters->getTransformationMethod().getMethodName()
 					== SpectralParameters::GraphTransformationMethod::NO_TRANSFORMATION) {
@@ -140,18 +138,6 @@ void ClusterXX::Spectral_Clusterer::computeSimilarityMatrix() {
 	}
 }
 
-void ClusterXX::Spectral_Clusterer::computeLaplacianMatrix() {
-	unsigned int N = originalData.cols();
-	Eigen::MatrixXd D = Eigen::MatrixXd::Zero(N, N);
-	for (unsigned int i = 0; i < N; ++i) {
-		D(i, i) = similarityMatrix.col(i).sum();
-	}
-	//TODO implement normalized laplacian
-	// L = D-W : unnormalized Laplacian
-	laplacianMatrix = D - similarityMatrix;
-	//L = I-D^-1*W ?
-}
-
 void ClusterXX::Spectral_Clusterer::compute() {
 	unsigned int N = originalData.cols();
 
@@ -170,7 +156,14 @@ void ClusterXX::Spectral_Clusterer::compute() {
 	Eigen::MatrixXd dataForKMeans = eigenSolver.eigenvectors().block(0, 0, N,
 			parameters->getK()).transpose();
 
-	//TODO ugly constant
+	prepareKMeansData(&dataForKMeans);
+
+	if (parameters->getVerbose()) {
+		std::cout << "Eigenvalues : " << std::endl
+				<< getEigenvalues().transpose() << std::endl;
+	}
+
+	//TODO get rid of ugly constant
 	std::shared_ptr<ClustererParameters> kMeansParams = std::make_shared<
 			KMeansParameters>(parameters->getK(), 1000);
 
@@ -181,4 +174,60 @@ void ClusterXX::Spectral_Clusterer::compute() {
 	KMeans_Clusterer kmeansClusterer(dataForKMeans, kMeansParams);
 	kmeansClusterer.compute();
 	clusters = kmeansClusterer.getClusters();
+}
+
+ClusterXX::UnnormalizedSpectralClustering::UnnormalizedSpectralClustering(
+		const Eigen::MatrixXd &_data,
+		const std::shared_ptr<ClustererParameters> &_params,
+		bool dataIsDistanceMatrix) :
+		Spectral_Clusterer(_data, _params, dataIsDistanceMatrix) {
+}
+
+void ClusterXX::UnnormalizedSpectralClustering::computeLaplacianMatrix() {
+	unsigned int N = originalData.cols();
+	Eigen::MatrixXd D = Eigen::MatrixXd::Zero(N, N);
+	for (unsigned int i = 0; i < N; ++i) {
+		D(i, i) = similarityMatrix.col(i).sum();
+	}
+	laplacianMatrix = D - similarityMatrix;
+}
+
+ClusterXX::NormalizedSpectralClustering_RandomWalk::NormalizedSpectralClustering_RandomWalk(
+		const Eigen::MatrixXd &_data,
+		const std::shared_ptr<ClustererParameters> &_params,
+		bool dataIsDistanceMatrix) :
+		Spectral_Clusterer(_data, _params, dataIsDistanceMatrix) {
+}
+
+void ClusterXX::NormalizedSpectralClustering_RandomWalk::computeLaplacianMatrix() {
+	unsigned int N = originalData.cols();
+	Eigen::MatrixXd D = Eigen::MatrixXd::Zero(N, N);
+	std::cout << "Similarity matrix : " << std::endl << similarityMatrix << std::endl;
+	for (unsigned int i = 0; i < N; ++i) {
+		D(i, i) = similarityMatrix.col(i).sum();
+	}
+	laplacianMatrix = Eigen::MatrixXd::Identity(N, N) - D.inverse() * similarityMatrix;
+	std::cout << "Laplacian matrix : " << std::endl << laplacianMatrix << std::endl;
+}
+
+ClusterXX::NormalizedSpectralClustering_Symmetric::NormalizedSpectralClustering_Symmetric(
+		const Eigen::MatrixXd &_data,
+		const std::shared_ptr<ClustererParameters> &_params,
+		bool dataIsDistanceMatrix) :
+		Spectral_Clusterer(_data, _params, dataIsDistanceMatrix) {
+}
+
+void ClusterXX::NormalizedSpectralClustering_Symmetric::computeLaplacianMatrix() {
+	unsigned int N = originalData.cols();
+	Eigen::MatrixXd D_1_2 = Eigen::MatrixXd::Zero(N, N);
+	for (unsigned int i = 0; i < N; ++i) {
+		D_1_2(i, i) = std::pow(similarityMatrix.col(i).sum(), -0.5);
+	}
+	laplacianMatrix = Eigen::MatrixXd::Identity(N, N)
+			- D_1_2 * similarityMatrix * D_1_2;
+}
+
+void ClusterXX::NormalizedSpectralClustering_Symmetric::prepareKMeansData(
+		Eigen::MatrixXd *kMeansData) {
+	kMeansData->colwise().normalize();
 }

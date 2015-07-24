@@ -17,10 +17,13 @@ class Clusterer {
 public:
 	virtual void compute() = 0;
 	std::vector<int> getClusters();
+	static double computeRandIndex(const std::vector<int> &clustering1, const std::vector<int> &clustering2);
+	static double computeAdjustedRandIndex(const std::vector<int> &clustering1, const std::vector<int> &clustering2);
 	double computeRandIndex(const std::vector<int> &otherClustering);
 	double computeAdjustedRandIndex(const std::vector<int> &otherClustering);
-	void printClustering(const std::map<int, std::string> &labelsMap,
+	void printClusteringMatrix(const std::map<int, std::string> &labelsMap,
 			const std::vector<int> &realClusters);
+	void printRawClustering(const std::vector<std::string> &labels);
 	virtual ~Clusterer() = default;
 protected:
 	std::vector<int> clusters;

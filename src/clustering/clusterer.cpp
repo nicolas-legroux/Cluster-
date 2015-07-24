@@ -8,17 +8,18 @@ std::vector<int> ClusterXX::Clusterer::getClusters() {
 }
 
 double ClusterXX::Clusterer::computeRandIndex(
-		const std::vector<int> &otherClustering) {
-	assert(clusters.size() == otherClustering.size());
-	unsigned int n = clusters.size();
+		const std::vector<int> &clustering1,
+		const std::vector<int> &clustering2) {
+	assert(clustering1.size() == clustering2.size());
+	unsigned int n = clustering1.size();
 	int count = 0;
 	for (unsigned int i = 0; i < n - 1; ++i) {
 		for (unsigned int j = i + 1; j < n; ++j) {
-			if ((clusters[i] == clusters[j])
-					&& otherClustering[i] == otherClustering[j]) {
+			if ((clustering1[i] == clustering1[j])
+					&& clustering2[i] == clustering2[j]) {
 				count++;
-			} else if ((clusters[i] != clusters[j])
-					&& otherClustering[i] != otherClustering[j]) {
+			} else if ((clustering1[i] != clustering1[j])
+					&& clustering2[i] != clustering2[j]) {
 				count++;
 			}
 		}
@@ -28,21 +29,27 @@ double ClusterXX::Clusterer::computeRandIndex(
 	return (double) count / ((double) numberOfPairs(n));
 }
 
-double ClusterXX::Clusterer::computeAdjustedRandIndex(
+double ClusterXX::Clusterer::computeRandIndex(
 		const std::vector<int> &otherClustering) {
-	assert(clusters.size() == otherClustering.size());
-	unsigned int n = clusters.size();
+	return computeRandIndex(clusters, otherClustering);
+}
 
-	int K1 = *max_element(clusters.cbegin(), clusters.cend()) + 1;
-	int K2 = *max_element(otherClustering.cbegin(), otherClustering.cend()) + 1;
+double ClusterXX::Clusterer::computeAdjustedRandIndex(
+		const std::vector<int> &clustering1,
+		const std::vector<int> &clustering2) {
+	assert(clustering1.size() == clustering2.size());
+	unsigned int n = clustering1.size();
+
+	int K1 = *max_element(clustering1.cbegin(), clustering1.cend()) + 1;
+	int K2 = *max_element(clustering2.cbegin(), clustering2.cend()) + 1;
 
 	std::vector<int> contingencyTable(K1 * K2, 0);
 	std::vector<int> count1(K1, 0);
 	std::vector<int> count2(K2, 0);
 
 	for (unsigned int i = 0; i != n; ++i) {
-		int c1 = clusters[i];
-		int c2 = otherClustering[i];
+		int c1 = clustering1[i];
+		int c2 = clustering2[i];
 		++contingencyTable[c1 * K2 + c2];
 		++count1[c1];
 		++count2[c2];
@@ -65,11 +72,16 @@ double ClusterXX::Clusterer::computeAdjustedRandIndex(
 	return (index - expectedIndex) / (maxIndex - expectedIndex);
 }
 
-void ClusterXX::Clusterer::printClustering(
+double ClusterXX::Clusterer::computeAdjustedRandIndex(
+		const std::vector<int> &otherClustering) {
+	return computeAdjustedRandIndex(clusters, otherClustering);
+}
+
+void ClusterXX::Clusterer::printClusteringMatrix(
 		const std::map<int, std::string> &labelsMap,
 		const std::vector<int> &realClusters) {
-	std::cout << std::endl << "****** Clustering results : ******"
-			<< std::endl << std::endl;
+	std::cout << std::endl << "****** Clustering results : ******" << std::endl
+			<< std::endl;
 
 	unsigned int realClustersN = labelsMap.size();
 	unsigned int computedClustersN = *std::max_element(clusters.cbegin(),
@@ -113,4 +125,14 @@ void ClusterXX::Clusterer::printClustering(
 	}
 
 	std::cout << global_sum << std::endl;
+}
+
+void ClusterXX::Clusterer::printRawClustering(
+		const std::vector<std::string> &labels) {
+	assert(labels.size() == clusters.size());
+	std::cout << "{" << std::endl;
+	for (unsigned int i = 0; i < labels.size(); ++i) {
+		std::cout << labels[i] << "\t" << clusters[i] << std::endl;
+	}
+	std::cout << "}" << std::endl;
 }

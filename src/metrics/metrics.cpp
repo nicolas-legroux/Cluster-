@@ -80,10 +80,10 @@ MatrixXd ClusterXX::ManhattanDistance::computeMatrix(const MatrixXd &X,
 	unsigned int N = X.cols();
 	unsigned int M = Y.cols();
 	MatrixXd D(N, M);
+	assert(X.rows() == Y.rows());
 	for (unsigned int i = 0; i < N; ++i) {
 		for (unsigned int j = 0; j < M; ++j) {
-			double dist = (X.col(i) - Y.col(j)).lpNorm<1>();
-			D(i, j) = dist;
+			D(i, j) = (X.col(i) - Y.col(j)).lpNorm<1>();
 		}
 	}
 	return D;
@@ -96,7 +96,8 @@ MatrixXd ClusterXX::ManhattanDistance::computeMatrix(const MatrixXd &X) const {
 	}
 	MatrixXd D(N, N);
 	for (unsigned int i = 0; i < N; ++i) {
-		for (unsigned int j = i; j < N; ++j) {
+		D(i, i) = 0;
+		for (unsigned int j = i + 1; j < N; ++j) {
 			double dist = (X.col(i) - X.col(j)).lpNorm<1>();
 			D(i, j) = dist;
 			D(j, i) = dist;
