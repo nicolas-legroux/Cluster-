@@ -80,8 +80,11 @@ double ClusterXX::Clusterer::computeAdjustedRandIndex(
 void ClusterXX::Clusterer::printClusteringMatrix(
 		const std::vector<std::string> &realLabels,
 		const std::vector<int> &realClusters) {
-	std::cout << std::endl << "****** Clustering results : ******" << std::endl
-			<< std::endl;
+	std::cout << std::endl << "****** Clustering results : ******" << std::endl;
+	std::cout << "Classes : " << std::endl;
+	for (unsigned int i = 0; i < realLabels.size(); ++i) {
+		std::cout << i << " : " << realLabels[i] << std::endl;
+	}
 
 	unsigned int realClustersN = realLabels.size();
 	unsigned int computedClustersN = *std::max_element(clusters.cbegin(),
@@ -96,14 +99,14 @@ void ClusterXX::Clusterer::printClusteringMatrix(
 		clusteringGraph[realCluster * computedClustersN + computedCluster]++;
 	}
 
-	std::cout << "-----------\t";
+	std::cout << "---\t";
 	for (unsigned int j = 0; j < computedClustersN; ++j) {
 		std::cout << "#" << j << "\t";
 	}
-	std::cout << "SUM" << std::endl;
+	std::cout << "SUM\t" << std::endl;
 
 	for (unsigned int i = 0; i < realClustersN; ++i) {
-		std::cout << realLabels[i] << "\t";
+		std::cout << "#" << i << "\t";
 		unsigned int sum = 0;
 		for (unsigned int j = 0; j < computedClustersN; ++j) {
 			sum += clusteringGraph[i * computedClustersN + j];
@@ -113,7 +116,7 @@ void ClusterXX::Clusterer::printClusteringMatrix(
 	}
 
 	unsigned int global_sum = 0;
-	std::cout << "SUM" << "\t\t";
+	std::cout << "SUM" << "\t";
 	for (unsigned int j = 0; j < computedClustersN; ++j) {
 		unsigned int sum = 0;
 
