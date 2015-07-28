@@ -78,12 +78,12 @@ double ClusterXX::Clusterer::computeAdjustedRandIndex(
 }
 
 void ClusterXX::Clusterer::printClusteringMatrix(
-		const std::map<int, std::string> &labelsMap,
+		const std::vector<std::string> &realLabels,
 		const std::vector<int> &realClusters) {
 	std::cout << std::endl << "****** Clustering results : ******" << std::endl
 			<< std::endl;
 
-	unsigned int realClustersN = labelsMap.size();
+	unsigned int realClustersN = realLabels.size();
 	unsigned int computedClustersN = *std::max_element(clusters.cbegin(),
 			clusters.cend()) + 1;
 	std::vector<int> clusteringGraph(realClustersN * computedClustersN, 0);
@@ -103,7 +103,7 @@ void ClusterXX::Clusterer::printClusteringMatrix(
 	std::cout << "SUM" << std::endl;
 
 	for (unsigned int i = 0; i < realClustersN; ++i) {
-		std::cout << labelsMap.at(i) << "\t";
+		std::cout << realLabels[i] << "\t";
 		unsigned int sum = 0;
 		for (unsigned int j = 0; j < computedClustersN; ++j) {
 			sum += clusteringGraph[i * computedClustersN + j];

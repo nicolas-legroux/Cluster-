@@ -89,6 +89,13 @@ public:
 	virtual void prepareKMeansData(Eigen::MatrixXd *kMeansData) override;
 };
 
+class NormalizedSpectralClustering : public NormalizedSpectralClustering_Symmetric{
+public :
+	NormalizedSpectralClustering(const Eigen::MatrixXd &_data,
+			const std::shared_ptr<ClustererParameters> &_params,
+			bool dataIsDistanceMatrix = false);
+};
+
 } //End of namespace ClusterXX
 
 #endif /* SRC_ALGORITHMS_SPECTRAL_CLUSTERER_HPP_ */

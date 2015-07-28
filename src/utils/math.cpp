@@ -31,7 +31,3 @@ bool ClusterXX::Utilities::Math::greaterThan(double x, double y){
 bool ClusterXX::Utilities::Math::lessThan(double x, double y){
 	return lessThanZero(x-y);
 }
-
-
-
-

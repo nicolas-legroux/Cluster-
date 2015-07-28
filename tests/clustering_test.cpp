@@ -93,7 +93,7 @@ void Test::small_spectral_test() {
 	ClusterXX::Utilities::print_vector(clusters);
 	std::cout << std::endl;
 
-	std::cout << "*** Normalized version (2000) *** " << std::endl;
+	std::cout << "*** Normalized version (Random Walk) *** " << std::endl;
 	ClusterXX::NormalizedSpectralClustering_RandomWalk clusterer2(dataToCluster, params);
 	clusterer2.compute();
 	std::vector<int> clusters2 = clusterer2.getClusters();
@@ -101,7 +101,7 @@ void Test::small_spectral_test() {
 	ClusterXX::Utilities::print_vector(clusters2);
 	std::cout << std::endl;
 
-	std::cout << "*** Normalized version (2002) *** " << std::endl;
+	std::cout << "*** Normalized version (Symmetric) *** " << std::endl;
 	ClusterXX::NormalizedSpectralClustering_Symmetric clusterer3(dataToCluster, params);
 	clusterer3.compute();
 	std::vector<int> clusters3 = clusterer3.getClusters();
