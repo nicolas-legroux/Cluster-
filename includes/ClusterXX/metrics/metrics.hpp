@@ -19,9 +19,7 @@ enum MetricName {
 	COSINE_DISTANCE,
 	EUCLIDEAN_DISTANCE,
 	SQUARED_EUCLIDEAN_DISTANCE,
-	MANHATTAN_DISTANCE,
-	JACCARD_SIMILARITY,
-	JACCARD_DISTANCE
+	MANHATTAN_DISTANCE
 };
 
 /*
@@ -235,36 +233,6 @@ public:
 	}
 	std::string toString() const{
 		return "spearman-distance";
-	}
-};
-
-class JaccardSimilarity : public Metric {
-public:
-	double compute(const Eigen::VectorXd &left,
-			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
-			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
-	bool isDistanceMetric() const {
-		return false;
-	}
-	std::string toString() const{
-		return "jaccard-similarity";
-	}
-};
-
-class JaccardDistance : public Metric {
-public:
-	double compute(const Eigen::VectorXd &left,
-			const Eigen::VectorXd &right) const;
-	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X,
-			const Eigen::MatrixXd &Y) const;
-	Eigen::MatrixXd computeMatrix(const Eigen::MatrixXd &X) const;
-	bool isDistanceMetric() const {
-		return true;
-	}
-	std::string toString() const{
-		return "jaccard-distance";
 	}
 };
 

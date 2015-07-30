@@ -321,68 +321,6 @@ MatrixXd ClusterXX::SpearmanDistance::computeMatrix(const MatrixXd &X) const {
 	return 1.0 - SpearmanAbsoluteCorrelation().computeMatrix(X).array();
 }
 
-double ClusterXX::JaccardSimilarity::compute(const VectorXd &X,
-		const VectorXd &Y) const {
-	double jaccard_intersection = 0;
-	double jaccard_union = 0;
-	for (unsigned int i = 0; i < X.rows(); ++i) {
-		double x = X(i);
-		double y = Y(i);
-		bool b1 = Utilities::Math::equal(x, 1);
-		bool b2 = Utilities::Math::equal(y, 1);
-		jaccard_intersection += (b1 && b2);
-		jaccard_union += (b1 || b2);
-	}
-	return jaccard_intersection / jaccard_union;
-}
-
-MatrixXd ClusterXX::JaccardSimilarity::computeMatrix(const MatrixXd &X,
-		const MatrixXd &Y) const {
-	if (getVerbose()) {
-		std::cout << "Computing Jaccard Similarity..." << std::endl;
-	}
-	unsigned int N = X.cols();
-	unsigned int M = Y.cols();
-	MatrixXd D(N, M);
-	for (unsigned int i = 0; i < N; ++i) {
-		for (unsigned int j = 0; j < M; ++j) {
-			double dist = compute(X.col(i), Y.col(j));
-			D(i, j) = dist;
-		}
-	}
-	return D;
-}
-
-MatrixXd ClusterXX::JaccardSimilarity::computeMatrix(const MatrixXd &X) const {
-	if (getVerbose()) {
-		std::cout << "Computing Jaccard Similarity..." << std::endl;
-	}
-	unsigned int N = X.cols();
-	MatrixXd D(N, N);
-	for (unsigned int i = 0; i < N; ++i) {
-		for (unsigned int j = i; j < N; ++j) {
-			double dist = compute(X.col(i), X.col(j));
-			D(i, j) = dist;
-			D(j, i) = dist;
-		}
-	}
-	return D;
-}
-
-double ClusterXX::JaccardDistance::compute(const VectorXd &X,
-		const VectorXd &Y) const {
-	return 1.0 - JaccardSimilarity().compute(X, Y);
-}
-
-MatrixXd ClusterXX::JaccardDistance::computeMatrix(const MatrixXd &X,
-		const MatrixXd &Y) const {
-	return 1.0 - JaccardSimilarity().computeMatrix(X, Y).array();
-}
-
-MatrixXd ClusterXX::JaccardDistance::computeMatrix(const MatrixXd &X) const {
-	return 1.0 - JaccardSimilarity().computeMatrix(X).array();
-}
-
 std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(
 		MetricName metricName) {
 	switch (metricName) {
@@ -410,10 +348,6 @@ std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(
 		return std::make_shared<SpearmanCorrelation>();
 	case MetricName::SPEARMAN_DISTANCE:
 		return std::make_shared<SpearmanDistance>();
-	case MetricName::JACCARD_SIMILARITY:
-		return std::make_shared<JaccardSimilarity>();
-	case MetricName::JACCARD_DISTANCE:
-		return std::make_shared<JaccardDistance>();
 	default:
 		assert(false);
 		return std::make_shared<EuclideanDistance>(); //Eclipse complains otherwise
@@ -447,10 +381,6 @@ std::shared_ptr<ClusterXX::Metric> ClusterXX::buildMetric(
 		return std::make_shared<SpearmanCorrelation>();
 	} else if (s == "spearman-distance") {
 		return std::make_shared<SpearmanDistance>();
-	} else if (s == "jaccard" || s == "jaccard-similarity") {
-		return std::make_shared<JaccardSimilarity>();
-	} else if (s == "jaccard-distance") {
-		return std::make_shared<JaccardDistance>();
 	} else {
 		std::cerr
 				<< "Couldn't match metric with name '" + s
