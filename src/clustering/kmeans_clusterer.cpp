@@ -11,12 +11,14 @@
 #include <stdexcept>
 #include <vector>
 #include <limits>
+#include <thread>
 #include <ClusterXX/utils/utils.hpp>
 
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
 
-ClusterXX::KMeans_Clusterer::KMeans_Clusterer(const Eigen::MatrixXd &_data,
+ClusterXX::Single_KMeans_Clusterer::Single_KMeans_Clusterer(
+		const Eigen::MatrixXd &_data,
 		std::shared_ptr<ClustererParameters> _params) :
 		data(_data), dataToCluster(_data.cols(), true), currentDistortion(
 				std::numeric_limits<double>::max()) {
@@ -31,7 +33,8 @@ ClusterXX::KMeans_Clusterer::KMeans_Clusterer(const Eigen::MatrixXd &_data,
 	medoids.resize(data.rows(), parameters->getK());
 }
 
-ClusterXX::KMeans_Clusterer::KMeans_Clusterer(const Eigen::MatrixXd &_data,
+ClusterXX::Single_KMeans_Clusterer::Single_KMeans_Clusterer(
+		const Eigen::MatrixXd &_data,
 		std::shared_ptr<ClustererParameters> _params,
 		std::vector<int> *initialClusters) :
 		data(_data), dataToCluster(_data.cols()), currentDistortion(
@@ -57,7 +60,7 @@ ClusterXX::KMeans_Clusterer::KMeans_Clusterer(const Eigen::MatrixXd &_data,
 }
 
 //TODO : implement better algorithm
-void ClusterXX::KMeans_Clusterer::initializeClustersRandomly() {
+void ClusterXX::Single_KMeans_Clusterer::initializeClustersRandomly() {
 	std::default_random_engine engine(std::random_device { }());
 	std::uniform_int_distribution<int> distribution(0, data.cols() - 1);
 	std::vector<VectorXd> initialMedoids(parameters->getK());
@@ -88,7 +91,7 @@ void ClusterXX::KMeans_Clusterer::initializeClustersRandomly() {
 	}
 }
 
-void ClusterXX::KMeans_Clusterer::recalculateMeans() {
+void ClusterXX::Single_KMeans_Clusterer::recalculateMeans() {
 	std::vector<int> clusterSize(parameters->getK(), 0);
 	//Reset medoids to 0
 	medoids *= 0;
@@ -106,9 +109,10 @@ void ClusterXX::KMeans_Clusterer::recalculateMeans() {
 	}
 }
 
-double ClusterXX::KMeans_Clusterer::kMeansIteration() {
+double ClusterXX::Single_KMeans_Clusterer::kMeansIteration() {
 
-	MatrixXd distances = SquaredEuclideanDistance().computeMatrix(medoids, data);
+	MatrixXd distances = SquaredEuclideanDistance().computeMatrix(medoids,
+			data);
 	double newDistortion = 0;
 	for (unsigned int i = 0; i != data.cols(); ++i) {
 		if (dataToCluster[i]) {
@@ -122,7 +126,7 @@ double ClusterXX::KMeans_Clusterer::kMeansIteration() {
 	return newDistortion;
 }
 
-void ClusterXX::KMeans_Clusterer::compute() {
+void ClusterXX::Single_KMeans_Clusterer::compute() {
 
 	initializeClustersRandomly();
 
@@ -154,10 +158,80 @@ void ClusterXX::KMeans_Clusterer::compute() {
 	}
 }
 
-MatrixXd ClusterXX::KMeans_Clusterer::getMedoids() {
+MatrixXd ClusterXX::Single_KMeans_Clusterer::getMedoids() {
 	return medoids;
 }
 
-double ClusterXX::KMeans_Clusterer::getDistortion() {
+double ClusterXX::Single_KMeans_Clusterer::getDistortion() {
 	return currentDistortion;
+}
+
+ClusterXX::Multiple_KMeans_Clusterer::Multiple_KMeans_Clusterer(
+		const Eigen::MatrixXd &_data,
+		std::shared_ptr<ClustererParameters> _params) :
+		data(_data), currentDistortion(std::numeric_limits<double>::max()) {
+	clusters.resize(_data.cols());
+	parameters = std::dynamic_pointer_cast<KMeansParameters>(_params);
+	if (!parameters) {
+		throw std::invalid_argument(
+				"Could not convert ClustererParameters pointer into KMeansParameters pointer.");
+	}
+}
+
+Eigen::MatrixXd ClusterXX::Multiple_KMeans_Clusterer::getMedoids() {
+	return medoids;
+}
+
+double ClusterXX::Multiple_KMeans_Clusterer::getDistortion() {
+	return currentDistortion;
+}
+
+void ClusterXX::Multiple_KMeans_Clusterer::compute() {
+	unsigned int nThreads = parameters->getNumberOfParallelKMeans();
+
+	std::shared_ptr<ClustererParameters> singleKMeansParameters = std::make_shared<
+			KMeansParameters>(parameters->getK(),
+			parameters->getMaxIterations(), false);
+
+	for (unsigned int i = 0; i < nThreads; ++i) {
+		kmeansClusterers.push_back(
+				Single_KMeans_Clusterer(data, singleKMeansParameters));
+	}
+
+	auto cluster_compute = [](Single_KMeans_Clusterer *singleClusterer) {
+		singleClusterer->compute();
+	};
+
+	if (parameters->getVerbose()) {
+		std::cout << "Launching multiple KMeans (number of parallel KMeans = "
+				<< parameters->getNumberOfParallelKMeans() << ")" << std::endl;
+	}
+
+	std::vector<std::thread> t(nThreads);
+	for (unsigned int i = 0; i < nThreads; ++i) {
+		t[i] = std::thread(cluster_compute, &kmeansClusterers[i]);
+	}
+
+	for (unsigned int i = 0; i < nThreads; ++i) {
+		t[i].join();
+	}
+
+	if (parameters->getVerbose()) {
+		std::cout << "Done. Looking for the clustering with the least distortion..."
+				<< std::endl;
+	}
+
+	double bestDistortion = currentDistortion;
+	unsigned int bestClusterer = 0;
+	for (unsigned int i = 0; i < nThreads; ++i) {
+		double clustererDistortion = kmeansClusterers[i].getDistortion();
+		if (clustererDistortion < bestDistortion) {
+			bestDistortion = clustererDistortion;
+			bestClusterer = i;
+		}
+	}
+
+	currentDistortion = bestDistortion;
+	medoids = kmeansClusterers[bestClusterer].getMedoids();
+	clusters = kmeansClusterers[bestClusterer].getClusters();
 }

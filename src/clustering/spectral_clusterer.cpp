@@ -158,15 +158,14 @@ void ClusterXX::Spectral_Clusterer::compute() {
 
 	prepareKMeansData(&dataForKMeans);
 
-
 	if (parameters->getVerbose()) {
 		std::cout << "Eigenvalues : " << std::endl
 				<< getEigenvalues().transpose() << std::endl;
 	}
 
-	//TODO get rid of ugly constant
+	//TODO get rid of ugly constants
 	std::shared_ptr<ClustererParameters> kMeansParams = std::make_shared<
-			KMeansParameters>(parameters->getK(), 1000);
+			KMeansParameters>(parameters->getK(), 1000, 8, false);
 
 	if (parameters->getVerbose()) {
 		std::cout << "Calling KMeans." << std::endl;

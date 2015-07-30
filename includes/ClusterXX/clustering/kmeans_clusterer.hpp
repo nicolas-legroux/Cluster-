@@ -13,9 +13,9 @@
 #include <Eigen/Dense>
 #include <memory>
 
-namespace ClusterXX{
+namespace ClusterXX {
 
-class KMeans_Clusterer : public Clusterer {
+class Single_KMeans_Clusterer: public Clusterer {
 private:
 	const Eigen::MatrixXd &data;
 	std::shared_ptr<KMeansParameters> parameters;
@@ -31,15 +31,37 @@ private:
 	double kMeansIteration();
 
 public:
-	KMeans_Clusterer(const Eigen::MatrixXd &_data,
+	Single_KMeans_Clusterer(const Eigen::MatrixXd &_data,
 			std::shared_ptr<ClustererParameters> _params);
-	KMeans_Clusterer(const Eigen::MatrixXd &_data,
+	Single_KMeans_Clusterer(const Eigen::MatrixXd &_data,
 			std::shared_ptr<ClustererParameters> _params,
 			std::vector<int> *initialClusters);
 
 	void compute() override;
 	Eigen::MatrixXd getMedoids();
 	double getDistortion();
+};
+
+class Multiple_KMeans_Clusterer: public Clusterer {
+private:
+	const Eigen::MatrixXd &data;
+	std::shared_ptr<KMeansParameters> parameters;
+	std::vector<Single_KMeans_Clusterer> kmeansClusterers;
+	Eigen::MatrixXd medoids;
+	double currentDistortion;
+public:
+	Multiple_KMeans_Clusterer(const Eigen::MatrixXd &_data,
+			std::shared_ptr<ClustererParameters> _params);
+	void compute() override;
+	Eigen::MatrixXd getMedoids();
+	double getDistortion();
+};
+
+class KMeans_Clusterer : public Multiple_KMeans_Clusterer{
+public:
+	KMeans_Clusterer(const Eigen::MatrixXd &_data,
+			std::shared_ptr<ClustererParameters> _params) : Multiple_KMeans_Clusterer(_data, _params){
+	}
 };
 
 } //End of namespace ClusterXX

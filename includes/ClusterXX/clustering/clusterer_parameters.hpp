@@ -5,7 +5,7 @@
 #include <cassert>
 #include "../metrics/metrics.hpp"
 
-namespace ClusterXX{
+namespace ClusterXX {
 
 class ClustererParameters {
 private:
@@ -24,10 +24,17 @@ class KMeansParameters: public ClustererParameters {
 private:
 	unsigned int K;
 	unsigned int maxIterations;
+	unsigned int numberOfParallelKMeans;
 public:
-	KMeansParameters(unsigned int _K, unsigned int _maxIter, bool verbose =
-			false) :
-			ClustererParameters(verbose), K(_K), maxIterations(_maxIter) {
+	KMeansParameters(unsigned int _K, unsigned int _maxIter, bool verbose) :
+			ClustererParameters(verbose), K(_K), maxIterations(_maxIter), numberOfParallelKMeans(
+					1) {
+	}
+
+	KMeansParameters(unsigned int _K, unsigned int _maxIter,
+			unsigned int _numberOfParallelKMeans = 1, bool verbose = false) :
+			ClustererParameters(verbose), K(_K), maxIterations(_maxIter), numberOfParallelKMeans(
+					_numberOfParallelKMeans) {
 	}
 
 	unsigned int getK() {
@@ -36,6 +43,10 @@ public:
 
 	unsigned int getMaxIterations() {
 		return maxIterations;
+	}
+
+	unsigned int getNumberOfParallelKMeans() {
+		return numberOfParallelKMeans;
 	}
 };
 
@@ -112,10 +123,11 @@ public:
 			} else if (method
 					== GraphTransformationMethodName::GAUSSIAN_MIXTURE) {
 				guaussianModelStdDev = param;
-			}
-			else{
-				assert(method
-					== GraphTransformationMethodName::NO_TRANSFORMATION && param == 0);
+			} else {
+				assert(
+						method
+								== GraphTransformationMethodName::NO_TRANSFORMATION
+								&& param == 0);
 			}
 		}
 

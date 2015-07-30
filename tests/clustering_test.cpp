@@ -31,7 +31,7 @@ void Test::small_kmeans_test() {
 			<< dataToCluster << std::endl;
 
 	std::shared_ptr<ClusterXX::ClustererParameters> params = std::make_shared<
-			ClusterXX::KMeansParameters>(K, Nmax, true);
+			ClusterXX::KMeansParameters>(K, Nmax, 8, true);
 
 	ClusterXX::KMeans_Clusterer clusterer(dataToCluster, params);
 	clusterer.compute();

@@ -15,5 +15,5 @@ std::vector<double> X(N * DIM);
 std::vector<double> D(N * N);
 
 int main() {
-	Test::small_spectral_test();
+	Test::small_kmeans_test();
 }
