@@ -165,7 +165,7 @@ void ClusterXX::Spectral_Clusterer::compute() {
 
 	//TODO get rid of ugly constants
 	std::shared_ptr<ClustererParameters> kMeansParams = std::make_shared<
-			KMeansParameters>(parameters->getK(), 1000, 8, false);
+			KMeansParameters>(parameters->getK(), 1000, 25, false);
 
 	if (parameters->getVerbose()) {
 		std::cout << "Calling KMeans." << std::endl;
@@ -205,7 +205,8 @@ void ClusterXX::NormalizedSpectralClustering_RandomWalk::computeLaplacianMatrix(
 	for (unsigned int i = 0; i < N; ++i) {
 		D(i, i) = similarityMatrix.col(i).sum();
 	}
-	laplacianMatrix = Eigen::MatrixXd::Identity(N, N) - D.inverse() * similarityMatrix;
+	laplacianMatrix = Eigen::MatrixXd::Identity(N, N)
+			- D.inverse() * similarityMatrix;
 }
 
 ClusterXX::NormalizedSpectralClustering_Symmetric::NormalizedSpectralClustering_Symmetric(
@@ -230,7 +231,10 @@ void ClusterXX::NormalizedSpectralClustering_Symmetric::prepareKMeansData(
 	kMeansData->colwise().normalize();
 }
 
-ClusterXX::NormalizedSpectralClustering::NormalizedSpectralClustering(const Eigen::MatrixXd &_data,
+ClusterXX::NormalizedSpectralClustering::NormalizedSpectralClustering(
+		const Eigen::MatrixXd &_data,
 		const std::shared_ptr<ClustererParameters> &_params,
-		bool dataIsDistanceMatrix) : NormalizedSpectralClustering_Symmetric(_data, _params, dataIsDistanceMatrix){
+		bool dataIsDistanceMatrix) :
+		NormalizedSpectralClustering_Symmetric(_data, _params,
+				dataIsDistanceMatrix) {
 }
